@@ -25,6 +25,5 @@ define('MASTER_TABLE_ACCOUNT', 'accountname');
 define('BOT_TYPE_WHITELIST', '0');
 define('BOT_TYPE_BLACKLIST', '1');
 define('BOT_TYPE_REFLECTOR', '2');
-define('BOT_TYPE_WHITELIST', '3');
 
 ?>
