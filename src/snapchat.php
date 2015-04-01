@@ -3,6 +3,7 @@
 include_once dirname(__FILE__) . '/snapchat_agent.php';
 include_once dirname(__FILE__) . '/snapchat_cache.php';
 include_once dirname(__FILE__) . '/func.php';
+require(__FILE__) . '../production/constants.php';
 
 /**
  * @file
@@ -915,7 +916,7 @@ class Snapchat extends SnapchatAgent {
 	 * @return mixed
 	 *   An array of snaps or FALSE on failure.
 	 */
-	public function getSnaps($save = FALSE)
+	public function getSnaps($save = FALSE, $saveAccount = '')
 	{
 		$updates = $this->getUpdates();
 		if(empty($updates))
@@ -959,7 +960,7 @@ class Snapchat extends SnapchatAgent {
 				$from = $snap->sender;
 				$time = $snap->sent;
 
-				$this->getMedia($id, $from, $time);
+				$this->getMedia($id, $from, $time, $saveAccount);
 			}
 		}
 
@@ -1472,6 +1473,9 @@ class Snapchat extends SnapchatAgent {
 	 *
 	 * @param string $id
 	 *   The snap ID.
+     *
+     * @param string saveAccount
+     *   Appended to save directory /snaps_<saveaccount>/
 	 *
 	 * @return mixed
 	 *   The snap data or FALSE on failure.
@@ -1481,7 +1485,7 @@ class Snapchat extends SnapchatAgent {
 	 *		media~zip-CE6F660A-4A9F-4BD6-8183-245C9C75B8A0	    => m4v_file_data
 	 * 	)
 	 */
-	function getMedia($id, $from = null, $time = null)
+	function getMedia($id, $from = null, $time = null, $saveAccount = "none")
 	{
 		// Make sure we're logged in and have a valid access token.
 		if(!$this->auth_token || !$this->username)
@@ -1510,12 +1514,13 @@ class Snapchat extends SnapchatAgent {
 		{
 			if($from != null && $time != null)
 			{
-				$path = __DIR__ . DIRECTORY_SEPARATOR . "snaps" . DIRECTORY_SEPARATOR .  $from;
+                $path = __DIR__ . DIRECTORY_SEPARATOR . 
+                    ".." . DIRECTORY_SEPARATOR . $SNAPS_SAVEDIR . DIRECTORY_SEPARATOR . "_" . $saveAccount;
 				if(!file_exists($path))
 				{
 					mkdir($path);
 				}
-				$file = $path . DIRECTORY_SEPARATOR . date("Y-m-d H-i", (int) ($time / 1000));
+				$file = $path . DIRECTORY_SEPARATOR . $from . "_" . date("Y-m-d-H-i", (int) ($time / 1000));
 				file_put_contents($file, $result);
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$finfo = finfo_file($finfo, $file);
