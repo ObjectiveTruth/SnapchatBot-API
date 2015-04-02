@@ -1,7 +1,7 @@
 <?php
-require "constants.php";
+require_once "constants.php";
 
-class SnapchatBot{
+class SnapchatBotCustom{
 
     function initialize($accountName){
         try {
