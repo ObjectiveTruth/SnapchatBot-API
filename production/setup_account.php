@@ -1,7 +1,5 @@
 <?php
 require_once "constants.php";
-require __DIR__ . "/src/bootstrap.php";
-require_once __DIR__ . "/src/schema/friends.php";
 
 //Locally Required Constants
 define("FRIENDS_TABLE_SCHEMA", "
@@ -39,15 +37,6 @@ createAccountDBAndTables($AccountName); //Will only Creates if required
 
 createNewAccountEntry($AccountName); //If the account already exists, will ask before overwrite
 
-$doctrineORM = new DoctrineORM($AccountName);
-$entityManager = $doctrineORM->getEntityManager();
-
-$friend = new Friend();
-$friend->setUsername("Caleb");
-$friend->setPermission(14);
-
-$entityManager->persist($friend);
-$entityManager->flush();
 
 
 function createMasterDBAndTable(){

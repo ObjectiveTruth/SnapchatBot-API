@@ -10,12 +10,12 @@ class Friend
     /** @permission @Column(type="integer") **/
     protected $permission;
 
-    public function getUsername()
+    public function getName()
     {
         return $this->username;
     }
 
-    public function setUsername($username)
+    public function setName($username)
     {
         $this->username = $username;
     }

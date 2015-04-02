@@ -3,7 +3,7 @@
 include_once dirname(__FILE__) . '/snapchat_agent.php';
 include_once dirname(__FILE__) . '/snapchat_cache.php';
 include_once dirname(__FILE__) . '/func.php';
-require(__FILE__) . '../production/constants.php';
+require_once __DIR__ . "/../production/constants.php";
 
 /**
  * @file
