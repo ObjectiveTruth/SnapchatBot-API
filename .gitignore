@@ -10,7 +10,10 @@
 
 src/auth.dat
 
-#Custom
+#Composer
+composer.lock
+composer.phar
+vendor/
 
 # Created by https://www.gitignore.io
 
