@@ -15,23 +15,21 @@ class Customer
     /** @bot_password @Column(type="string") **/
     protected $bot_password;
 
-    function __construct($accountname, $bot_type, $bot_username, $bot_password){
+    function __construct($accountname, $bot_type){
         $this->accountname= $accountname;
-        $this->botType = $bot_type;
-        $this->botUsername = $bot_username;
-        $this->botPassword = $bot_password;
+        $this->bot_type = $bot_type;
     }
-    public function getbotUsername()    {return $this->botUsername;}
-    public function setbotUsername($bot_username){self::$botUserName = $bot_username;}
+    public function getBotUsername()    {return $this->bot_username;}
+    public function setBotUsername($bot_username){$this->bot_username = $bot_username;}
 
-    public function getbotPassword()    {return $this->botPassword;}
-    public function setbotPassword($bot_password){self::$botUserName = $bot_password;}
+    public function getBotPassword()    {return $this->bot_password;}
+    public function setBotPassword($bot_password){$this->bot_password = $bot_password;}
 
     public function getAccountName()           {return $this->accountname;}
     public function setAccountName($accountname)      {$this->accountname= $accountname;}
 
-    public function getbotType()        {return $this->bot_type;}
-    public function setbotType($bot_type){$this->bot_type = $bot_type;}
+    public function getBotType()        {return $this->bot_type;}
+    public function setBotType($bot_type){$this->bot_type = $bot_type;}
 
 
 }

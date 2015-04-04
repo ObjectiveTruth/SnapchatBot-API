@@ -5,29 +5,35 @@ class CustomerTest extends PHPUnit_Framework_TestCase{
     protected static $dummyCustomer;
 
     public function testConstructor(){
-        self::$dummyCustomer = new Customer("foo", 2, "username", "password");
+        self::$dummyCustomer = new Customer("foo", 2);
 
-        $this->assertEquals(2, self::$dummyCustomer->getbotType());
-        $this->assertEquals("foo", self::$dummyCustomer->getName());
+        $this->assertEquals("foo", self::$dummyCustomer->getAccountName());
+        $this->assertEquals(2, self::$dummyCustomer->getBotType());
     }
 
-    /*  
-     *  @depends testConstructor
-     */
     public function testGetSetName(){
-        self::$dummyCustomer->setName("bar");
+        self::$dummyCustomer->setAccountName("bar");
 
-        $this->assertEquals("bar", self::$dummyCustomer->getName());
+        $this->assertEquals("bar", self::$dummyCustomer->getAccountName());
     }
 
-    /*
-     *  @depends testGetSetName
-     */
-    public function testGetSetbotType(){
+    public function testGetSetBotType(){
 
-        self::$dummyCustomer->setbotType(2);
+        self::$dummyCustomer->setBotType(2);
 
-        $this->assertEquals(2, self::$dummyCustomer->getbotType());
+        $this->assertEquals(2, self::$dummyCustomer->getBotType());
+    }
+
+    public function testGetSetBotUsername(){
+        self::$dummyCustomer->setBotUsername("username");
+
+        $this->assertEquals("username", self::$dummyCustomer->getBotUsername());
+    }
+
+    public function testGetSetBotPassword(){
+        self::$dummyCustomer->setBotPassword("password");
+
+        $this->assertEquals("password", self::$dummyCustomer->getBotPassword());
     }
 
 }
