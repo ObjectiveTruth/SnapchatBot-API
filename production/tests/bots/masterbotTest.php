@@ -38,32 +38,57 @@ class basicTest extends PHPUnit_Framework_TestCase{
      * @depends testInitializeForDB
      * @short
      */
-    public function testStartOneCycle(){
-        $mockMasterBot = $this->getMockBuilder('DummyMasterBot')
+    public function testonFriendRequestCalledForNewFriendsArraySize(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
             ->setConstructorArgs(Array(self::$dummyCustomerEntity))
-            ->getMock();
+            ->setMethods(array('onNewFriendRequest'))->getMock();
 
-        $this->assertEquals(true, $mockMasterBot->startForOneCycle());
+        $mock->expects($this->exactly(5))->method('onNewFriendRequest');
+
+        $mock->initialize();
+        $mock->startForOneCycle();
     }
+
+    /**
+     * @depends testonFriendRequestCalledForNewFriendsArraySize
+     * @short
+     */
+    public function testonNewSnapForNewSnapsArraySize(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setMethods(array('onNewSnap'))->getMock();
+
+        $mock->expects($this->exactly(5))->method('onNewSnap');
+
+        $mock->initialize();
+        $mock->startForOneCycle();
+    }
+
+
      
 
-public function invokeMethod(&$object, $methodName, array $parameters = array())
-{
-    $reflection = new \ReflectionClass(get_class($object));
-    $method = $reflection->getMethod($methodName);
-    $method->setAccessible(true);
+    public function invokeMethod(&$object, $methodName, array $parameters = array())
+    {
+        $reflection = new \ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
 
-    return $method->invokeArgs($object, $parameters);
-}
+        return $method->invokeArgs($object, $parameters);
+    }
 }
 
 //Implementation of MasterBot for testing
 class DummyMasterBot extends MasterBot{
     protected function onNewFriendRequest($newFriends){
     }
+    protected function onNewSnap($snap){
+    }
     protected function refreshToken(){
     }
     protected function getNewFriends(){
+        return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
+    }
+    protected function getNewSnaps(){
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
     }
 
