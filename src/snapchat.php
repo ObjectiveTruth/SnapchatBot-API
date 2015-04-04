@@ -933,6 +933,7 @@ class Snapchat extends SnapchatAgent {
 			{
 			    $snaps[] = (object) array(
 					'id' => $snap->id,
+                    'full_path_to_snap_file' => "",
 					'media_id' => empty($snap->c_id) ? FALSE : $snap->c_id,
 					'media_type' => $snap->m,
 					'time' => empty($snap->t) ? FALSE : $snap->t,
@@ -960,7 +961,9 @@ class Snapchat extends SnapchatAgent {
 				$from = $snap->sender;
 				$time = $snap->sent;
 
-				$this->getMedia($id, $from, $time, $saveAccount);
+                $snap->full_path_to_snap_file = 
+                    $this->getMedia($id, $from, $time, $saveAccount);
+
 			}
 		}
 
@@ -1487,6 +1490,7 @@ class Snapchat extends SnapchatAgent {
 	 */
 	function getMedia($id, $from = null, $time = null, $saveAccount = "none")
 	{
+        $fullPathToSnapFile;
 		// Make sure we're logged in and have a valid access token.
 		if(!$this->auth_token || !$this->username)
 		{
@@ -1521,6 +1525,7 @@ class Snapchat extends SnapchatAgent {
 					mkdir($path);
 				}
 				$file = $path . DIRECTORY_SEPARATOR . $from . "_" . date("Y-m-d-H-i", (int) ($time / 1000));
+                $this->fullPathToSnapFile = $file;
 				file_put_contents($file, $result);
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$finfo = finfo_file($finfo, $file);
@@ -1545,14 +1550,14 @@ class Snapchat extends SnapchatAgent {
 				}
 			}
 
-			return $result;
+			return $this->fullPathToSnapFile;
 		}
 		else
 		{
 			$result = parent::decryptECB($result);
 			if(parent::isMedia(substr($result, 0, 2)))
 			{
-				return $result;
+				return $this->fullPathToSnapFile;
 			}
 
 			//When a snapchat video is sent with "text" or overlay
