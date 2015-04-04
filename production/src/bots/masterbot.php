@@ -18,7 +18,7 @@ abstract class MasterBot{
 
     function initialize(){
         $botUsername = $this->customerEntity->getBotUsername();
-        $accountName = $this->customerEntity->getName();
+        $accountName = $this->customerEntity->getAccountName();
 
         $this->snapchat_engine = new Snapchat($botUsername, self::DEBUG);
         $accountEntityManager = new ORMDBConnection($accountName);
@@ -68,19 +68,20 @@ abstract class MasterBot{
     }
 
     protected function refreshToken(){
-        $botPassword = $this->customerEntity->getPassword();
+        $botPassword = $this->customerEntity->getBotPassword();
         $this->snapchat_engine->login($botPassword);
     }
 
     protected function getNewFriends(){
         //Normalize for possible false value, if false return an empty array
-        $thisCouldBeFalse = $this->snapchat_engine->getUncomfirmedFriends();
+        $snapchat_engine = $this->snapchat_engine;
+        $thisCouldBeFalse = $snapchat_engine->getUncomfirmedFriends();
         if($thisCouldBeFalse == false){$thisCouldBeFalse = Array();}
         return $thisCouldBeFalse;
     }
 
     protected function getNewSnaps(){
-        $accountName = $this->customerEntity->getName();
+        $accountName = $this->customerEntity->getAccountName();
         $newSnaps = $this->snapchat_engine->getSnaps(true, $accountName);
         //Returns false if something went wrong with the get request to snapchat
         if($newSnaps == false){throw new exception('Failed to get list of snaps');}
