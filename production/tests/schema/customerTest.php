@@ -2,29 +2,34 @@
 require_once __DIR__ . "/../../src/schema/customer.php";
 
 class CustomerTest extends PHPUnit_Framework_TestCase{
-
-    public function testGetSetName(){
-        $customer = new Customer("bar", 1);
-
-        $customer->setName("foo");
-
-        $this->assertEquals("foo", $customer->getName());
-    }
-
-    public function testGetSetbotType(){
-        $customer = new Customer("bar", 1);
-
-        $customer->setbotType(2);
-
-        $this->assertEquals(2, $customer->getbotType());
-    }
+    protected static $dummyCustomer;
 
     public function testConstructor(){
-        $customer = new Customer("foo", 2);
+        self::$dummyCustomer = new Customer("foo", 2, "username", "password");
 
-        $this->assertEquals(2, $customer->getbotType());
-        $this->assertEquals("foo", $customer->getName());
+        $this->assertEquals(2, self::$dummyCustomer->getbotType());
+        $this->assertEquals("foo", self::$dummyCustomer->getName());
     }
+
+    /*  
+     *  @depends testConstructor
+     */
+    public function testGetSetName(){
+        self::$dummyCustomer->setName("bar");
+
+        $this->assertEquals("bar", self::$dummyCustomer->getName());
+    }
+
+    /*
+     *  @depends testGetSetName
+     */
+    public function testGetSetbotType(){
+
+        self::$dummyCustomer->setbotType(2);
+
+        $this->assertEquals(2, self::$dummyCustomer->getbotType());
+    }
+
 }
 
 
