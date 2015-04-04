@@ -1,5 +1,7 @@
 <?php
 require_once "constants.php";
+require_once __DIR__ . "/src/ormbootstrap.php";
+require_once __DIR__ . "/src/schema/customer.php";
 
 //Locally Required Constants
 define("FRIENDS_TABLE_SCHEMA", "
@@ -98,54 +100,88 @@ function createAccountDBAndTables($AccountName){
 }
 
 function createNewAccountEntry($AccountName){
-    try {
-        $conn = new PDO("mysql:host=" . SQLDBSERVERNAME, 
-            SQLDBUSERNAME, SQLDBPASSWORD);
-        //set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $botUserType;
+        $accountDBConnection = new ORMDBConnection(MASTER_SQL_DB_NAME);
+        $accountEntityManager = $accountDBConnection->getEntityManager();
+        $customer = $accountEntityManager->find("Customer", $AccountName);
 
-        echo "Connected successfully\n";
-
-        $conn->exec("USE " . MASTER_SQL_DB_NAME);
-
-        //Check if the accountname already exists if so prompt user with overwrite
-        $statement = $conn->prepare("SELECT 1 FROM " . MASTER_SQL_TABLE_NAME . " WHERE " .
-            MASTER_TABLE_ACCOUNT . " = :account ;");
-
-        $statement->bindParam(':account', $AccountName, PDO::PARAM_STR, 128);
-
-        $statement->execute()
-            or die(print_r($conn->errorInfo(), true));
-
-        if($statement->fetchColumn()){
+        if($customer != null){
             echo "$AccountName already exists.\n";
-            echo "Overwriting will reinitialize all the settings to defaults\n";
-            echo "Ovewrite? [y/n]:";
-
-            //if answers yes, return
-            $handle = fopen ("php://stdin","r");
-            $line = fgets($handle);
-            if(trim($line) != 'y'){
+            if(!doesUserWantToOverwrite()){
                 return;
             }
+            else{
+                $customer->setBotType(getBotTypeFromUser());
+            }
+        }else{
+            $customer = new Customer($AccountName, getBotTypeFromUser());
         }
 
-        //Insert new row with AccountName with defalt values
-        $statement = $conn->prepare("INSERT IGNORE INTO " . 
-            MASTER_SQL_TABLE_NAME . "(" . MASTER_TABLE_ACCOUNT .
-            ", " . MASTER_TABLE_BOT_TYPE . ") VALUES(:account, :bot_type)");
+        $customer->setBotUsername(getBotUsernameFromUser());
+        $customer->setBotPassword(getBotPasswordFromUser());
 
-        $statement->execute(array("account" => $AccountName, "bot_type" => '0'))
-            or die(print_r($conn->errorInfo(), true));
+        $accountEntityManager->persist($customer);
+        $accountEntityManager->flush();
+        echo "\nCreated Customer Object:\n";
 
-        echo "Created $AccountName row to Master Table Successfully\n";
-        $conn = null;
+        print_r($customer);
+
+}
+
+function getBotTypeFromUser(){
+    //Loop until valid input and return
+    $trimmedline; $bot_type;
+    $handle = fopen ("php://stdin","r");
+
+    do{
+        echo "BotType? (leave empty for default:0):";
+        $trimmedline = trim(fgets($handle));
+
+    } while(!(is_numeric($trimmedline) || empty($trimmedline)));
+
+    if(empty($trimmedline)){
+        $bot_type = 0;
     }
-    catch(PDOException $e)
-    {
-        echo "Connection failed: \n" . $e->getMessage();
+    else{
+        $bot_type = intval($trimmedline);
     }
 
+    return $bot_type;
+}
+
+function getBotUsernameFromUser(){
+    //Loop until valid input and return
+    $trimmedline; $bot_username;
+    $handle = fopen ("php://stdin","r");
+
+    echo "Bot Username? (can be empty but won't be usable):";
+    $trimmedline = trim(fgets($handle));
+    return $trimmedline;
+}
+
+function getBotPasswordFromUser(){
+    //Loop until valid input and return
+    $trimmedline; $bot_password;
+    $handle = fopen ("php://stdin","r");
+
+    echo "Bot Password? (can be empty but won't be usable):";
+    $trimmedline = trim(fgets($handle));
+    return $trimmedline;
+}
+
+
+function doesUserWantToOverwrite(){
+    echo "Overwriting will reinitialize all the settings to defaults\n";
+    echo "Ovewrite? [y/n]:";
+
+    $handle = fopen ("php://stdin","r");
+    $line = fgets($handle);
+    if(trim($line) == 'y' || trim($line) == 'yes'){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 ?>
