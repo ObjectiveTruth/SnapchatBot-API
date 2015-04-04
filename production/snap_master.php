@@ -7,7 +7,9 @@ $accountName = "Alex"; //Accountname to use
 ////////////////////////////////
 
 $botFactory = new BotFactory();
-$botFactory->returnBotForAccount($accountName);
+$mybot = $botFactory->returnBotForAccount($accountName);
+$mybot->initialize();
+$mybot->startForOneCycle();
 
 
 //$snapchatBot = new SnapchatBotCustom($accountName);
