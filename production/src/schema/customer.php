@@ -7,31 +7,31 @@ class Customer
 {
 
     /** @accountname @Id @Column(type="string") **/
-    protected $name;
+    protected $accountname;
     /** @bot_type @Column(type="integer") **/
-    protected $botType;
-    /** @bot_type @Column(type="string") **/
-    protected $botUsername;
-    /** @bot_type @Column(type="string") **/
-    protected $botPassword;
+    protected $bot_type;
+    /** @bot_username @Column(type="string") **/
+    protected $bot_username;
+    /** @bot_password @Column(type="string") **/
+    protected $bot_password;
 
-    function __construct($name, $botType, $botUsername, $botPassword){
-        $this->name = $name;
-        $this->botType = $botType;
-        $this->botUsername = $botUsername;
-        $this->botPassword = $botPassword;
+    function __construct($accountname, $bot_type, $bot_username, $bot_password){
+        $this->accountname= $accountname;
+        $this->botType = $bot_type;
+        $this->botUsername = $bot_username;
+        $this->botPassword = $bot_password;
     }
     public function getbotUsername()    {return $this->botUsername;}
-    public function setbotUsername($botUsername){self::$botUserName = $botUsername;}
+    public function setbotUsername($bot_username){self::$botUserName = $bot_username;}
 
     public function getbotPassword()    {return $this->botPassword;}
-    public function setbotPassword($botPassword){self::$botUserName = $botPassword;}
+    public function setbotPassword($bot_password){self::$botUserName = $bot_password;}
 
-    public function getName()           {return $this->name;}
-    public function setName($name)      {$this->name = $name;}
+    public function getAccountName()           {return $this->accountname;}
+    public function setAccountName($accountname)      {$this->accountname= $accountname;}
 
-    public function getbotType()        {return $this->botType;}
-    public function setbotType($botType){$this->botType = $botType;}
+    public function getbotType()        {return $this->bot_type;}
+    public function setbotType($bot_type){$this->bot_type = $bot_type;}
 
 
 }

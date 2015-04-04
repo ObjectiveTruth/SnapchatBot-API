@@ -1,21 +1,13 @@
 <?php
 
-require_once __DIR__ . "/src/bootstrap.php";
-require_once __DIR__ . "/src/schema/friends.php";
-
-require_once __DIR__ . "/../src/snapchat.php";
-require_once "utils.php";
-require_once "constants.php";
+require_once __DIR__ . "/src/botfactory.php";
 
 //////////// CONFIG ////////////
-$username = "devtestzoom"; // Your snapchat username
-//$username = $argv[1]; //Sets the username to the first argument
-$password = "zoomlens29"; // Your snapchat password
-//$password = $argv[2]; //Sets the password to the 2nd argument
-$debug = false; // Set this to true if you want to see all outgoing requests and responses from server
-
-$accountName = "Jason"; //Accountname to use 
+$accountName = "Alex"; //Accountname to use 
 ////////////////////////////////
+
+$botFactory = new BotFactory();
+$botFactory->returnBotForAccount($accountName);
 
 
 //$snapchatBot = new SnapchatBotCustom($accountName);
@@ -23,9 +15,6 @@ $accountName = "Jason"; //Accountname to use
 //Setup variables and DB connections
 //$snapchatBot->initialize();
 
-//Get a connection to the SQL DB and entity manager for ORM
-$accountDBConnection = new ORMDBConnection($accountName);
-$accountEntityManager = $accountDBConnection->getEntityManager();
 
 //$friend = new Friend();
 //$friend->setUsername("Caleb");
@@ -48,29 +37,6 @@ $accountEntityManager = $accountDBConnection->getEntityManager();
 
 //echo "My friends: ";
 //print_r($friends);
-$productRepository = $accountEntityManager->getRepository('Friend');
-$oldFriends = $productRepository->findAll();
-$oldFriendsStringArray = Array();
-
-if($oldFriends != null){
-    foreach ($oldFriends as $oldFriend) {
-        array_push($oldFriendsStringArray, $oldFriend->getName());
-    }
-}
-print_r($oldFriendsStringArray);
-
-$freshFriends = array("Caleb", "Alex", "Jason", "Thomas");
-
-$result = array_diff($freshFriends, $oldFriendsStringArray);
-
-foreach ($result as $newFriendEntry){
-    $friendEntity = new Friend();
-    $friend->setUsername($newFriendEntry);
-    $friend->setPermission(14);
-    $entityManager->persist($friend);
-}
-$entityManager->flush();
-print_r($result);
 
 // Send snap adding text to your image and 10 seconds
 //$snapchat->send($imagePath, $sendTo, "this is a test :D", 10);
