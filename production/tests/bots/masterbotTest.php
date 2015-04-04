@@ -32,8 +32,20 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testInitializeForDB(){
         self::$dummyMasterBot->initialize();
-
     }
+
+    /**
+     * @depends testInitializeForDB
+     * @short
+     */
+    public function testStartOneCycle(){
+        $mockMasterBot = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->getMock();
+
+        $this->assertEquals(true, $mockMasterBot->startForOneCycle());
+    }
+     
 
 public function invokeMethod(&$object, $methodName, array $parameters = array())
 {
@@ -47,9 +59,14 @@ public function invokeMethod(&$object, $methodName, array $parameters = array())
 
 //Implementation of MasterBot for testing
 class DummyMasterBot extends MasterBot{
-    protected function onNewFriend($newFriends){
-
+    protected function onNewFriendRequest($newFriends){
     }
+    protected function refreshToken(){
+    }
+    protected function getNewFriends(){
+        return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
+    }
+
 }
 
 
