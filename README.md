@@ -30,9 +30,15 @@ Interface to Snapchat
 
     Install to local directory ```curl -sS https://getcomposer.org/installer | php```
 
-    ```php composer.phar install``` then reboot for lock update before 
+    ```php composer.phar install``` then ```php composer.phar update```
 
-    ```php composer.phar update```
+    For Development install [phpunit](https://phpunit.de/getting-started.html)
+
+    ```php5 phpunit.phar ./``` to run all tests
+
+###Notes
+
+* DO NOT Install PHPunit from apt-get
 
     
 ### Special thanks

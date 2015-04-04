@@ -2,15 +2,52 @@
 
 require_once __DIR__ . "/../../src/bots/masterbot.php";
 require_once __DIR__ . "/../../../src/snapchat.php";
+require_once __DIR__ . "/../../src/schema/customer.php";
 
 class basicTest extends PHPUnit_Framework_TestCase{
+    protected static $dummyMasterBot;
+    protected static $dummyCustomerEntity;
 
-    public function (){
+    public static function setUpBeforeClass(){
+        self::$dummyCustomerEntity = new Customer("foo", 2, "username", "password");
+        self::$dummyMasterBot = new DummyMasterBot(self::$dummyCustomerEntity);
+    }
 
-        $masterBot = new MasterBot();
+    public function testConstructorEqualsCustomer(){
+        $this->assertEquals(self::$dummyCustomerEntity, 
+            self::$dummyMasterBot->getCustomerEntity());
 
-        $this->assertEquals('foo', $masterBot->getFriends());
+    }
+    /**
+     * @depends testConstructorEqualsCustomer
+     * @expectedException   Exception
+     * @expectedExceptionMessage Must call .initialize() first
+     */
+    public function testStart(){
+        self::$dummyMasterBot->start();
+    }
 
+    /**
+     * @depends testStart
+     */
+    public function testInitializeForDB(){
+        self::$dummyMasterBot->initialize();
+
+    }
+
+public function invokeMethod(&$object, $methodName, array $parameters = array())
+{
+    $reflection = new \ReflectionClass(get_class($object));
+    $method = $reflection->getMethod($methodName);
+    $method->setAccessible(true);
+
+    return $method->invokeArgs($object, $parameters);
+}
+}
+
+//Implementation of MasterBot for testing
+class DummyMasterBot extends MasterBot{
+    protected function onNewFriend($newFriends){
 
     }
 }
