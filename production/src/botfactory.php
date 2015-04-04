@@ -11,7 +11,6 @@ class BotFactory{
         $accountDBConnection = new ORMDBConnection("snapchatbot_db");
         $accountEntityManager = $accountDBConnection->getEntityManager();
         $customer = $accountEntityManager->find("Customer", $accountName);
-        echo $customer->getbotType();
         if($customer->getbotType() == 0){
             return new posttostorybot($customer);
         }
