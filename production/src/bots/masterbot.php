@@ -41,8 +41,22 @@ abstract class MasterBot{
 
         $botPassword = $this->customerEntity->getBotPassword();
 
+        $isFirstCycle = true;
+
         while(true){
+            //Must be called before the rest
             $this->refreshToken();
+
+            if($isFirstCycle){
+                $isFirstCycle = false;
+                $currentFriends = $this->getCurrentFriends();
+                if(count($currentFriends) > 0){
+                    foreach ($currentFriends as $friend){
+                        $this->saveFriendByNameToDBWithDefaults($friend);
+                    }
+                }
+            }
+
             $newFriends = $this->getNewFriends();
 
             if(count($newFriends) > 0){
@@ -81,6 +95,11 @@ abstract class MasterBot{
         return $thisCouldBeFalse;
     }
 
+    protected function getCurrentFriends(){
+        return $snapchat_engine = $this->snapchat_engine
+            ->getFriends();
+    }
+
     protected function getNewSnaps(){
         $accountName = $this->customerEntity->getAccountName();
         $newSnaps = $this->snapchat_engine->getSnaps(true, $accountName);
@@ -99,7 +118,7 @@ abstract class MasterBot{
             ->markSnapViewed($id, $time);
     }
 
-    protected function saveFriendByNameToDB($newFriendName){
+    protected function saveFriendByNameToDBWithDefaults($newFriendName){
         $accountDBConnection = new ORMDBConnection($this->getAccountName());
         $accountEntityManager = $accountDBConnection->getEntityManager();
         $friend = $accountEntityManager->find("Friend", $newFriendName);

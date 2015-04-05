@@ -906,6 +906,7 @@ class Snapchat extends SnapchatAgent {
 			$this->cache->set('updates', $result->updates_response);
 			return $result->updates_response;
 		}
+        print_r($result);
 
 		return $result;
 	}
@@ -1157,7 +1158,10 @@ class Snapchat extends SnapchatAgent {
 			return FALSE;
 		}
 
-		$friends = array();
+		$friendList = array();
+        if(!property_exists($updates['data'], 'friends_response')){
+            return $friendList;
+        }
 		$friends = $updates['data']->friends_response;
 		$friends = $friends->friends;
 
