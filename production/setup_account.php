@@ -15,8 +15,10 @@ define("FRIENDS_TABLE_SCHEMA", "
 define("MASTER_TABLE_SCHEMA", "
     ( ".MASTER_TABLE_ACCOUNT . "  VARCHAR(128) NOT NULL, " .
     MASTER_TABLE_BOT_TYPE . " INT NOT NULL, " .
-    "bot_username VARCHAR(128) NOT NULL, bot_password VARCHAR(128) NOT NULL,
-        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    "bot_username VARCHAR(128) NOT NULL, " .
+    "bot_password VARCHAR(128) NOT NULL, " .
+    "default_friend_permission INT NOT NULL, " .
+        "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
                 ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY ( " . MASTER_TABLE_ACCOUNT . " ) 
      );");
@@ -117,6 +119,7 @@ function createNewAccountEntry($AccountName){
             $customer = new Customer($AccountName, getBotTypeFromUser());
         }
 
+        $customer->setDefaultFriendPermission(getDefaultFriendPermissionFromUser());
         $customer->setBotUsername(getBotUsernameFromUser());
         $customer->setBotPassword(getBotPasswordFromUser());
 
@@ -147,6 +150,27 @@ function getBotTypeFromUser(){
     }
 
     return $bot_type;
+}
+
+function getDefaultFriendPermissionFromUser(){
+    //Loop until valid input and return
+    $trimmedline; $defaultFriendPermission;
+    $handle = fopen ("php://stdin","r");
+
+    do{
+        echo "Default Friend Permission? (leave empty for default:0):";
+        $trimmedline = trim(fgets($handle));
+
+    } while(!(is_numeric($trimmedline) || empty($trimmedline)));
+
+    if(empty($trimmedline)){
+        $defaultFriendPermission = 0;
+    }
+    else{
+        $defaultFriendPermission = intval($trimmedline);
+    }
+
+    return $defaultFriendPermission;
 }
 
 function getBotUsernameFromUser(){
