@@ -10,7 +10,6 @@ class basicTest extends PHPUnit_Framework_TestCase{
 
     public static function setUpBeforeClass(){
         self::$dummyCustomerEntity = new Customer("foo", 2, "username", "password");
-        self::$dummyCustomerEntity->setDefaultFriendPermission(2);
         self::$dummyMasterBot = new DummyMasterBot(self::$dummyCustomerEntity);
     }
 
@@ -27,7 +26,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
     public function testGetDefaultFriendPermission(){
         $this->assertEquals(
             $this->invokeMethod(self::$dummyMasterBot, 
-            'getDefaultFriendPermission'), 2);
+            'getDefaultFriendPermission'), 0);
     }
 
     /**
@@ -53,9 +52,13 @@ class basicTest extends PHPUnit_Framework_TestCase{
     public function testonFriendRequestCalledForNewFriendsArraySize(){
         $mock = $this->getMockBuilder('DummyMasterBot')
             ->setConstructorArgs(Array(self::$dummyCustomerEntity))
-            ->setMethods(array('onNewFriendRequest'))->getMock();
+            ->setMethods(array('onNewFriendRequest', 
+                'saveFriendByNameToDBWithDefaults'))
+            ->getMock();
 
         $mock->expects($this->exactly(5))->method('onNewFriendRequest');
+        $mock->expects($this->exactly(5))
+            ->method('saveFriendByNameToDBWithDefaults');
 
         $mock->initialize();
         $mock->startForOneCycle();
@@ -93,6 +96,8 @@ class basicTest extends PHPUnit_Framework_TestCase{
 class DummyMasterBot extends MasterBot{
     protected function onNewFriendRequest($newFriends){
     }
+    protected function saveFriendByNameToDBWithDefaults($newFriends){
+    }
     protected function onNewSnap($snap){
     }
     protected function refreshToken(){
@@ -101,6 +106,9 @@ class DummyMasterBot extends MasterBot{
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
     }
     protected function getNewSnaps(){
+        return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
+    }
+    protected function getCurrentFriends(){
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
     }
 

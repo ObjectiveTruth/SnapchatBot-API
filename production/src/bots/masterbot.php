@@ -135,7 +135,7 @@ abstract class MasterBot{
     }
 
     protected function getDefaultFriendPermission(){
-        return $this->customerEntity->getDefaultFriendPermission();
+        return 0;
 
     }
 
