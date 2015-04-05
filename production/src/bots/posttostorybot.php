@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/masterbot.php";
+require_once __DIR__ . "/../ormbootstrap.php";
 
 /**
  * Posts all received snaps to story
@@ -8,11 +9,14 @@ require_once __DIR__ . "/masterbot.php";
 class PostToStoryBot extends MasterBot{
 
     protected function onNewFriendRequest($newFriend){
+        saveFriendToDB($newFriend);
+        
         echo "friend: $newFriend\n";
+        
     }
 
     protected function onNewSnap($snap){
-        echo "snapfile: " . $snap->full_path_to_snap_file . "\n";
+        markSnapIdAsViewed($snap->id, 2); 
     }
 }
 

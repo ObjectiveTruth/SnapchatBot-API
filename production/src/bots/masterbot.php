@@ -88,6 +88,32 @@ abstract class MasterBot{
         return $newSnaps;
 
     }
+    
+    protected function markSnapIdAsViewed($id, $time=1){
+        $snapchat_engine = $this->snapchat_engine
+            ->markSnapViewed($id, $time);
+    }
+
+    protected function saveFriendToDB($newFriendName){
+        $accountDBConnection = new ORMDBConnection($this->getAccountName());
+        $accountEntityManager = $accountDBConnection->getEntityManager();
+        $friend = $accountEntityManager->find("Friend", $newFriendName);
+        if($friend == null){
+            $friend = new Friend($newFriendName, 
+                $this->getDefaultFriendPermission());
+        }
+        $accountEntityManager->persist($friend);
+        $accountEntityManager->flush();
+    }
+
+    protected function getAccountName(){
+        return $this->customerEntity->getAccountName();
+    }
+
+    protected function getDefaultFriendPermission(){
+        return $this->customerEntity->getDefaultFriendPermission();
+
+    }
 
     function getCustomerEntity(){
         return $this->customerEntity;

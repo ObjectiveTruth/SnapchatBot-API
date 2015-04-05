@@ -10,6 +10,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
 
     public static function setUpBeforeClass(){
         self::$dummyCustomerEntity = new Customer("foo", 2, "username", "password");
+        self::$dummyCustomerEntity->setDefaultFriendPermission(2);
         self::$dummyMasterBot = new DummyMasterBot(self::$dummyCustomerEntity);
     }
 
@@ -18,6 +19,17 @@ class basicTest extends PHPUnit_Framework_TestCase{
             self::$dummyMasterBot->getCustomerEntity());
 
     }
+    public function testGetAccountName(){
+        $this->assertEquals(
+            $this->invokeMethod(self::$dummyMasterBot, 'getAccountName'), "foo");
+    }
+
+    public function testGetDefaultFriendPermission(){
+        $this->assertEquals(
+            $this->invokeMethod(self::$dummyMasterBot, 
+            'getDefaultFriendPermission'), 2);
+    }
+
     /**
      * @depends testConstructorEqualsCustomer
      * @expectedException   Exception

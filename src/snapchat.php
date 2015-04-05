@@ -1525,7 +1525,7 @@ class Snapchat extends SnapchatAgent {
 				{
 					mkdir($path);
 				}
-				$file = $path . DIRECTORY_SEPARATOR . $from . "_" . date("Y-m-d-H-i", (int) ($time / 1000));
+				$file = $path . DIRECTORY_SEPARATOR . $from . "_" . $id;
                 $this->fullPathToSnapFile = $file;
 				file_put_contents($file, $result);
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
