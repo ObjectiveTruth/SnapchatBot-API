@@ -9,7 +9,8 @@ require_once __DIR__ . "/../ormbootstrap.php";
 class PostToStoryBot extends MasterBot{
 
     protected function onNewFriendRequest($newFriend){
-        saveFriendToDB($newFriend);
+        saveFriendByNameToDB($newFriend);
+        addFriendByName($newFriend);
         
         echo "friend: $newFriend\n";
         
