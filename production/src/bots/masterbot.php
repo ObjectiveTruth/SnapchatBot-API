@@ -75,7 +75,7 @@ abstract class MasterBot{
     protected function getNewFriends(){
         //Normalize for possible false value, if false return an empty array
         $snapchat_engine = $this->snapchat_engine;
-        $thisCouldBeFalse = $snapchat_engine->getUnconfirmedFriends();
+        $thisCouldBeFalse = $snapchat_engine->getAddedFriends();
         if($thisCouldBeFalse == false){$thisCouldBeFalse = Array();}
         return $thisCouldBeFalse;
     }
@@ -84,7 +84,7 @@ abstract class MasterBot{
         $accountName = $this->customerEntity->getAccountName();
         $newSnaps = $this->snapchat_engine->getSnaps(true, $accountName);
         //Returns false if something went wrong with the get request to snapchat
-        if($newSnaps == false){throw new exception('Failed to get list of snaps');}
+        if($newSnaps == false){$newSnaps = Array();}
         return $newSnaps;
 
     }
