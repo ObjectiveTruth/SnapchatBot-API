@@ -67,12 +67,12 @@ abstract class MasterBot{
                 }
             }
 
-            $newSnaps = $this->getNewSnaps();
-            if(count($newSnaps) > 0){
+            $newSnapObjs = $this->getNewSnaps();
+            if(count($newSnapObjs) > 0){
 
-                foreach ($newSnaps as $snap){
+                foreach ($newSnapObjs as $snapObj){
 
-                    $this->onNewSnap($snap);
+                    $this->onNewSnap($snapObj);
                 }
             }
 
@@ -118,16 +118,24 @@ abstract class MasterBot{
             ->markSnapViewed($id, $time);
     }
 
+    protected function postSnapToStoryByFilename($snapFileName){
+        $snapchat_engine = $this->snapchat_engine
+            ->setStory($snapFileName);
+    }
+
     protected function saveFriendByNameToDBWithDefaults($newFriendName){
+        //Only adds if entry doesn't already exist
         $accountDBConnection = new ORMDBConnection($this->getAccountName());
         $accountEntityManager = $accountDBConnection->getEntityManager();
         $friend = $accountEntityManager->find("Friend", $newFriendName);
+
         if($friend == null){
+
             $friend = new Friend($newFriendName, 
                 $this->getDefaultFriendPermission());
+            $accountEntityManager->persist($friend);
+            $accountEntityManager->flush();
         }
-        $accountEntityManager->persist($friend);
-        $accountEntityManager->flush();
     }
 
     protected function getAccountName(){

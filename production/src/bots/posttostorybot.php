@@ -15,8 +15,9 @@ class PostToStoryBot extends MasterBot{
         echo "friend: $newFriend\n";
     }
 
-    protected function onNewSnap($snap){
-        $this->markSnapIdAsViewed($snap->id, 2); 
+    protected function onNewSnap($snapObj){
+        $this->markSnapIdAsViewed($snapObj->id, 2); 
+        $this->postSnapToStoryByFilename($snapObj->full_path_to_snap_file);
     }
 }
 
