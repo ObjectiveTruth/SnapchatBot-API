@@ -36,6 +36,12 @@ class CustomerTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals("password", self::$dummyCustomer->getBotPassword());
     }
 
+    public function testGetSetDefaultFriendPermission(){
+        self::$dummyCustomer->setDefaultFriendPermission(2);
+
+        $this->assertEquals(2, self::$dummyCustomer->getDefaultFriendPermission());
+    }
+
 }
 
 
