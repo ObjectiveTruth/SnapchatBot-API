@@ -1196,6 +1196,7 @@ class Snapchat extends SnapchatAgent {
 	*/
 	public function getUnconfirmedFriends()
 	{
+        $unconfirmedList = false;
 		$updates = $this->getUpdates();
 
 		if(empty($updates))
@@ -1519,7 +1520,7 @@ class Snapchat extends SnapchatAgent {
 			if($from != null && $time != null)
 			{
                 $path = __DIR__ . DIRECTORY_SEPARATOR . 
-                    ".." . DIRECTORY_SEPARATOR . $SNAPS_SAVEDIR . DIRECTORY_SEPARATOR . "_" . $saveAccount;
+                    ".." . DIRECTORY_SEPARATOR . SNAPS_SAVEDIR . DIRECTORY_SEPARATOR . "_" . $saveAccount;
 				if(!file_exists($path))
 				{
 					mkdir($path);
