@@ -8,11 +8,11 @@ require_once __DIR__ . "/masterbot.php";
 class PostToStoryBot extends MasterBot{
 
     protected function onNewFriendRequest($newFriend){
-        echo "friend: $newFriend";
+        echo "friend: $newFriend\n";
     }
 
     protected function onNewSnap($snap){
-        echo "snapfile: " . $snap->full_path_to_snap_file;
+        echo "snapfile: " . $snap->full_path_to_snap_file . "\n";
     }
 }
 

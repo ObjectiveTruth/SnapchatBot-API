@@ -75,7 +75,7 @@ abstract class MasterBot{
     protected function getNewFriends(){
         //Normalize for possible false value, if false return an empty array
         $snapchat_engine = $this->snapchat_engine;
-        $thisCouldBeFalse = $snapchat_engine->getUncomfirmedFriends();
+        $thisCouldBeFalse = $snapchat_engine->getUnconfirmedFriends();
         if($thisCouldBeFalse == false){$thisCouldBeFalse = Array();}
         return $thisCouldBeFalse;
     }
