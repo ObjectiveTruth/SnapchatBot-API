@@ -86,7 +86,11 @@ abstract class MasterBot{
         //Returns false if something went wrong with the get request to snapchat
         if($newSnaps == false){$newSnaps = Array();}
         return $newSnaps;
+    }
 
+    protected function addFriendByName($friendName){
+        $snapchat_engine = $this->snapchat_engine
+            ->addFriend($friendName);
     }
     
     protected function markSnapIdAsViewed($id, $time=1){
@@ -94,7 +98,7 @@ abstract class MasterBot{
             ->markSnapViewed($id, $time);
     }
 
-    protected function saveFriendToDB($newFriendName){
+    protected function saveFriendByNameToDB($newFriendName){
         $accountDBConnection = new ORMDBConnection($this->getAccountName());
         $accountEntityManager = $accountDBConnection->getEntityManager();
         $friend = $accountEntityManager->find("Friend", $newFriendName);
