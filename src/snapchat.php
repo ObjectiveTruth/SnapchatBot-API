@@ -906,8 +906,6 @@ class Snapchat extends SnapchatAgent {
 			$this->cache->set('updates', $result->updates_response);
 			return $result->updates_response;
 		}
-        print_r($result);
-
 		return $result;
 	}
 
@@ -1541,7 +1539,6 @@ class Snapchat extends SnapchatAgent {
 					mkdir($path);
 				}
 				$file = $path . DIRECTORY_SEPARATOR . $from . "_" . $id;
-                $this->fullPathToSnapFile = $file;
 				file_put_contents($file, $result);
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$finfo = finfo_file($finfo, $file);
@@ -1563,6 +1560,7 @@ class Snapchat extends SnapchatAgent {
 				if($ext != null)
 				{
 					rename($file, $file . $ext);
+                    $this->fullPathToSnapFile = $file . $ext;
 				}
 			}
 
