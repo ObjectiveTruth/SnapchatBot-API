@@ -14,8 +14,6 @@ class BotFactory{
         if($customer->getbotType() == 0){
             return new posttostorybot($customer);
         }
-        print_r($repository);
-
     }
 }
 

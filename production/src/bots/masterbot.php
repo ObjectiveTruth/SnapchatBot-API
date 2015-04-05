@@ -96,8 +96,10 @@ abstract class MasterBot{
     }
 
     protected function getCurrentFriends(){
-        return $snapchat_engine = $this->snapchat_engine
+        $friendslist = $snapchat_engine = $this->snapchat_engine
             ->getFriends();
+        if($friendslist == false){$friendslist = Array();}
+        return $friendslist;
     }
 
     protected function getNewSnaps(){
