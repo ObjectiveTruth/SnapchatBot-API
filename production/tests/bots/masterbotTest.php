@@ -52,11 +52,27 @@ class basicTest extends PHPUnit_Framework_TestCase{
     public function testonFriendRequestCalledForNewFriendsArraySize(){
         $mock = $this->getMockBuilder('DummyMasterBot')
             ->setConstructorArgs(Array(self::$dummyCustomerEntity))
-            ->setMethods(array('onNewFriendRequest', 
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest', 
                 'saveFriendByNameToDBWithDefaults'))
             ->getMock();
 
         $mock->expects($this->exactly(5))->method('onNewFriendRequest');
+
+        $mock->initialize();
+        $mock->startForOneCycle();
+    }
+
+    /**
+     * @depends testInitializeForDB
+     * @short
+     */
+    public function testsaveFriendByNameToDBWithDefaults(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest', 
+                'saveFriendByNameToDBWithDefaults'))
+            ->getMock();
+
         $mock->expects($this->exactly(5))
             ->method('saveFriendByNameToDBWithDefaults');
 
@@ -65,13 +81,15 @@ class basicTest extends PHPUnit_Framework_TestCase{
     }
 
     /**
-     * @depends testonFriendRequestCalledForNewFriendsArraySize
+     * @depends testInitializeForDB
      * @short
      */
     public function testonNewSnapForNewSnapsArraySize(){
         $mock = $this->getMockBuilder('DummyMasterBot')
             ->setConstructorArgs(Array(self::$dummyCustomerEntity))
-            ->setMethods(array('onNewSnap'))->getMock();
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest',
+                'saveFriendByNameToDBWithDefaults'))
+            ->getMock();
 
         $mock->expects($this->exactly(5))->method('onNewSnap');
 
@@ -79,9 +97,64 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $mock->startForOneCycle();
     }
 
+    /**
+     * @depends testInitializeForDB
+     * @short
+     */
+    public function testEmptyGetFriends(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest',
+                'saveFriendByNameToDBWithDefaults', 'getCurrentFriends'))
+            ->getMock();
 
-     
+        $mock->expects($this->once())
+            ->method('getCurrentFriends')
+            ->will($this->returnValue(Array()));
 
+        $mock->initialize();
+        $mock->startForOneCycle();
+    }
+
+    /**
+     * @depends testInitializeForDB
+     * @short
+     */
+    public function testEmptyGetSnaps(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest',
+                'saveFriendByNameToDBWithDefaults', 'getCurrentFriends',
+                'getNewSnaps'))
+            ->getMock();
+
+        $mock->expects($this->once())
+            ->method('getNewSnaps')
+            ->will($this->returnValue(Array()));
+
+        $mock->initialize();
+        $mock->startForOneCycle();
+    }
+
+    /**
+     * @depends testInitializeForDB
+     * @short
+     */
+    public function testEmptyGetNewFriends(){
+        $mock = $this->getMockBuilder('DummyMasterBot')
+            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setMethods(array('onNewSnap', 'onNewFriendRequest',
+                'saveFriendByNameToDBWithDefaults', 'getCurrentFriends',
+                'getNewSnaps', 'getNewFriends'))
+            ->getMock();
+
+        $mock->expects($this->once())
+            ->method('getNewFriends')
+            ->will($this->returnValue(Array()));
+
+        $mock->initialize();
+        $mock->startForOneCycle();
+    }
     public function invokeMethod(&$object, $methodName, array $parameters = array())
     {
         $reflection = new \ReflectionClass(get_class($object));
