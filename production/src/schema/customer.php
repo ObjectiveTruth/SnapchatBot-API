@@ -14,8 +14,6 @@ class Customer
     protected $bot_username;
     /** @bot_password @Column(type="string") **/
     protected $bot_password;
-    /** @default_friend_permission @Column(type="integer") **/
-    protected $default_friend_permission;
 
     function __construct($accountname, $bot_type){
         $this->accountname= $accountname;
@@ -32,10 +30,4 @@ class Customer
 
     public function getBotType()        {return $this->bot_type;}
     public function setBotType($bot_type){$this->bot_type = $bot_type;}
-
-    public function getDefaultFriendPermission()
-        {return $this->default_friend_permission;}
-    public function setDefaultFriendPermission($default_friend_permission)
-        {$this->default_friend_permission = $default_friend_permission;}
-
 }
