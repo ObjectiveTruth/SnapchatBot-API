@@ -119,7 +119,6 @@ function createNewAccountEntry($AccountName){
             $customer = new Customer($AccountName, getBotTypeFromUser());
         }
 
-        $customer->setDefaultFriendPermission(getDefaultFriendPermissionFromUser());
         $customer->setBotUsername(getBotUsernameFromUser());
         $customer->setBotPassword(getBotPasswordFromUser());
 
@@ -150,27 +149,6 @@ function getBotTypeFromUser(){
     }
 
     return $bot_type;
-}
-
-function getDefaultFriendPermissionFromUser(){
-    //Loop until valid input and return
-    $trimmedline; $defaultFriendPermission;
-    $handle = fopen ("php://stdin","r");
-
-    do{
-        echo "Default Friend Permission? (leave empty for default:0):";
-        $trimmedline = trim(fgets($handle));
-
-    } while(!(is_numeric($trimmedline) || empty($trimmedline)));
-
-    if(empty($trimmedline)){
-        $defaultFriendPermission = 0;
-    }
-    else{
-        $defaultFriendPermission = intval($trimmedline);
-    }
-
-    return $defaultFriendPermission;
 }
 
 function getBotUsernameFromUser(){
