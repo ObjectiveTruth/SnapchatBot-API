@@ -925,7 +925,13 @@ class Snapchat extends SnapchatAgent {
 		}
 
 		$snaps = array();
+        if(!property_exists($updates['data'], 'conversations_response') ||
+           !is_array($updates['data']->conversations_response)){ 
+            return $snaps;
+        }
 		$conversations = $updates['data']->conversations_response;
+
+
 	    foreach($conversations as &$conversation)
 	    {
 			$pending_received_snaps = $conversation->pending_received_snaps;
@@ -1178,7 +1184,12 @@ class Snapchat extends SnapchatAgent {
 			return FALSE;
 		}
 
-		$friends = array();
+        $friendList = Array();
+
+        if(!property_exists($updates['data'], 'friends_response')){
+            return $friendList;
+        }
+
 		$friends = $updates['data']->friends_response->added_friends;
 		foreach($friends as $friend)
 		{
@@ -2603,8 +2614,7 @@ class Snapchat extends SnapchatAgent {
     	$updates = $this->getUpdates();
 			$updates = $updates['data'];
 			$fc = -1;
-			if ($updates != "")
-			{
+            if (property_exists($updates, 'friends_response')){
     			$friends = $updates->friends_response;
 					foreach($friends->friends as &$friend) if (strval($friend->type) == 0) $fc++;
 			}
