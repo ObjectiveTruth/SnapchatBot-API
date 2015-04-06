@@ -10,6 +10,11 @@ class Friend
     /** @permission @Column(type="integer") **/
     protected $permission;
 
+    function __construct($username, $permission){
+        $this->username= $username;
+        $this->permission = $permission;
+    }
+
     public function getName()
     {
         return $this->username;

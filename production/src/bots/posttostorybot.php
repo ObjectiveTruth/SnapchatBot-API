@@ -9,15 +9,14 @@ require_once __DIR__ . "/../ormbootstrap.php";
 class PostToStoryBot extends MasterBot{
 
     protected function onNewFriendRequest($newFriend){
-        saveFriendByNameToDB($newFriend);
-        addFriendByName($newFriend);
+        $this->saveFriendByNameToDB($newFriend);
+        $this->addFriendByName($newFriend);
         
         echo "friend: $newFriend\n";
-        
     }
 
     protected function onNewSnap($snap){
-        markSnapIdAsViewed($snap->id, 2); 
+        $this->markSnapIdAsViewed($snap->id, 2); 
     }
 }
 
