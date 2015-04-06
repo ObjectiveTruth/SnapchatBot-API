@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../../src/schema/customer.php";
 require_once __DIR__ . "/../ormbootstrap.php";
+require_once __DIR__ . "/../../src/schema/friend.php";
 
 abstract class MasterBot{
     const DEBUG = false;
