@@ -166,22 +166,27 @@ abstract class MasterBot{
     }
 
     protected function addFilenameToPendingApprovalList($filename){
-        $redisPendingApprovalListName = $this->getAccountName() . 
-            '-pending_approval');
+        $pendingApprovalListName = $this->getPendingApprovalListName();
 
         $redis = $this->getRedisConnection();
-        $redis->lPush($this->redisPendingApproval(),
+        $redis->lPush($pendingApprovalListName,
             $filename);
         $redis->save();
     }
 
-    protected function getRedisListNameForAccount($accountName){
-        return "$accountsname-pending_approval"
-
+    protected function getPendingApprovalListName(){
+        $accountName = $this->getAccountName();
+        return "$accountsname-pending_approval";
     }
 
     function getCustomerEntity(){
         return $this->customerEntity;
+    }
+
+    protected function peekNextPendingSnap(){
+        $redis = $this->getRedisConnection();
+        return $redis->
+
     }
 
     protected function onEndOfCycle(){
