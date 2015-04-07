@@ -6,12 +6,15 @@ require_once __DIR__ . "/../../src/schema/friend.php";
 
 abstract class MasterBot{
     const DEBUG = false;
+    const PERMISSION_CAN_POST = 0;
+    const PERMISSION_CANNOT_POST = 1;
     private $isInitialized = false;
     private $customerEntity;
     private $snapchat_engine;
 
     abstract protected function onNewFriendRequest($newFriend);
     abstract protected function onNewSnap($snap);
+    abstract protected function getDefaultFriendPermission();
 
     function __construct(Customer $customerEntity){
         $this->customerEntity = $customerEntity;
@@ -31,7 +34,7 @@ abstract class MasterBot{
     }
 
     function startForOneCycle(){
-        $this->startWithIntervalInSeconds(30, true);
+        $this->startWithIntervalInSeconds(20, true);
         return true;
     }
 
@@ -140,13 +143,15 @@ abstract class MasterBot{
         }
     }
 
-    protected function getAccountName(){
-        return $this->customerEntity->getAccountName();
+    protected function getPermissionForFriendByUsername($friendName){
+        $accountDBConnection = new ORMDBConnection($this->getAccountName());
+        $accountEntityManager = $accountDBConnection->getEntityManager();
+        return $accountEntityManager->find("Friend", $friendName)
+            ->getPermission();
     }
 
-    protected function getDefaultFriendPermission(){
-        return 0;
-
+    protected function getAccountName(){
+        return $this->customerEntity->getAccountName();
     }
 
     function getCustomerEntity(){

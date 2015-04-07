@@ -155,6 +155,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $mock->initialize();
         $mock->startForOneCycle();
     }
+
     public function invokeMethod(&$object, $methodName, array $parameters = array())
     {
         $reflection = new \ReflectionClass(get_class($object));
@@ -174,6 +175,9 @@ class DummyMasterBot extends MasterBot{
     protected function onNewSnap($snap){
     }
     protected function refreshToken(){
+    }
+    protected function getDefaultFriendPermission(){
+        return 0;
     }
     protected function getNewFriends(){
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
