@@ -156,6 +156,12 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $mock->startForOneCycle();
     }
 
+    public function testRedis(){
+        $redis = $this->invokeMethod(self::$dummyMasterBot, 
+            'getRedisConnection');
+       $this->assertEquals($redis->ping(), "+PONG"); 
+    }
+
     public function invokeMethod(&$object, $methodName, array $parameters = array())
     {
         $reflection = new \ReflectionClass(get_class($object));

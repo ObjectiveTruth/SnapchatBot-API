@@ -11,8 +11,15 @@ class BotFactory{
         $accountDBConnection = new ORMDBConnection("snapchatbot_db");
         $accountEntityManager = $accountDBConnection->getEntityManager();
         $customer = $accountEntityManager->find("Customer", $accountName);
-        if($customer->getbotType() == 0){
-            return new posttostorybot($customer);
+        $customerBotType = $customer->getbotType();
+        switch($customerBotType){
+        case 0:
+            return new PostToStoryBot($customer);
+        case 1:
+            return new WebModeratedBot($customer);
+        default:
+            throw new Exception("Bot Type: $customerBotType " . 
+                "for customer $accountName not found");
         }
     }
 }
