@@ -17,7 +17,6 @@ define("MASTER_TABLE_SCHEMA", "
     MASTER_TABLE_BOT_TYPE . " INT NOT NULL, " .
     "bot_username VARCHAR(128) NOT NULL, " .
     "bot_password VARCHAR(128) NOT NULL, " .
-    "default_friend_permission INT NOT NULL, " .
         "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
                 ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY ( " . MASTER_TABLE_ACCOUNT . " ) 
