@@ -11,6 +11,7 @@ abstract class MasterBot{
     private $isInitialized = false;
     private $customerEntity;
     private $snapchat_engine;
+    private $redis_client;
 
     abstract protected function onNewFriendRequest($newFriend);
     abstract protected function onNewSnap($snap);
@@ -78,6 +79,8 @@ abstract class MasterBot{
                     $this->onNewSnap($snapObj);
                 }
             }
+
+            $this->onEndOfCycle();
 
             if($runOnce){break;}
 
@@ -154,8 +157,34 @@ abstract class MasterBot{
         return $this->customerEntity->getAccountName();
     }
 
+    private function getRedisConnection(){
+        if($this->redis_client == null){
+            $this->redis_client = new Redis();
+        }
+        $this->redis_client->pconnect('127.0.0.1');
+        return $this->redis_client;
+    }
+
+    protected function addFilenameToPendingApprovalList($filename){
+        $redisPendingApprovalListName = $this->getAccountName() . 
+            '-pending_approval');
+
+        $redis = $this->getRedisConnection();
+        $redis->lPush($this->redisPendingApproval(),
+            $filename);
+        $redis->save();
+    }
+
+    protected function getRedisListNameForAccount($accountName){
+        return "$accountsname-pending_approval"
+
+    }
+
     function getCustomerEntity(){
         return $this->customerEntity;
+    }
+
+    protected function onEndOfCycle(){
     }
 
 
