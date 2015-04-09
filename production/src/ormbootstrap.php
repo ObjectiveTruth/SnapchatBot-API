@@ -32,8 +32,6 @@ class ORMDBConnection {
 
         // obtaining the entity manager
         $this->entityManager = EntityManager::create($conn, $metadataconfig);
-
-        return $this->entityManager;
     }
     
     public function getEntityManager(){

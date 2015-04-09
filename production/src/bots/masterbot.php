@@ -12,6 +12,7 @@ abstract class MasterBot{
     private $customerEntity;
     private $snapchat_engine;
     private $redis_client;
+    private $accountEntityManager;
 
     abstract protected function onNewFriendRequest($newFriend);
     abstract protected function onNewSnap($snap);
@@ -26,12 +27,13 @@ abstract class MasterBot{
         $accountName = $this->customerEntity->getAccountName();
 
         $this->snapchat_engine = new Snapchat($botUsername, self::DEBUG);
-        $accountEntityManager = new ORMDBConnection($accountName);
+        $ORMDBConnection = new ORMDBConnection($accountName);
+        $this->accountEntityManager = $ORMDBConnection->getEntityManager();
         $this->isInitialized = true;
     }
 
     function start(){
-        $this->startWithIntervalInSeconds(20);
+        $this->startWithIntervalInSeconds(30);
     }
 
     function startForOneCycle(){
@@ -66,8 +68,9 @@ abstract class MasterBot{
             if(count($newFriends) > 0){
 
                 foreach ($newFriends as $friend){
-
-                    $this->onNewFriendRequest($friend);
+                    if(!$this->doesFriendNameExist($friend)){
+                        $this->onNewFriendRequest($friend);
+                    }
                 }
             }
 
@@ -126,18 +129,29 @@ abstract class MasterBot{
             ->markSnapViewed($id, $time);
     }
 
+    /*
+     * @return bool 
+     *   True if successful, False is unsuccessful
+     */ 
     protected function postSnapToStoryByFilename($snapFileName){
-        $snapchat_engine = $this->snapchat_engine
+        return $snapchat_engine = $this->snapchat_engine
             ->setStory($snapFileName);
+    }
+
+    protected function doesFriendNameExist($friendName){
+        $accountEntityManager = $this->getAccountEntityManager();
+        $friend = $accountEntityManager->find("Friend", $friendName);
+        if($friend == null){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     protected function saveFriendByNameToDBWithDefaults($newFriendName){
         //Only adds if entry doesn't already exist
-        $accountDBConnection = new ORMDBConnection($this->getAccountName());
-        $accountEntityManager = $accountDBConnection->getEntityManager();
-        $friend = $accountEntityManager->find("Friend", $newFriendName);
-
-        if($friend == null){
+        $accountEntityManager = $this->getAccountEntityManager();
+        if(!$this->doesFriendNameExist($newFriendName)){
 
             $friend = new Friend($newFriendName, 
                 $this->getDefaultFriendPermission());
@@ -147,8 +161,7 @@ abstract class MasterBot{
     }
 
     protected function getPermissionForFriendByUsername($friendName){
-        $accountDBConnection = new ORMDBConnection($this->getAccountName());
-        $accountEntityManager = $accountDBConnection->getEntityManager();
+        $accountEntityManager = $this->getAccountEntityManager();
         return $accountEntityManager->find("Friend", $friendName)
             ->getPermission();
     }
@@ -176,16 +189,33 @@ abstract class MasterBot{
 
     protected function getPendingApprovalListName(){
         $accountName = $this->getAccountName();
-        return "$accountsname-pending_approval";
+        return "$accountName-pending_approval";
+    }
+
+    protected function getPendingPostListName(){
+        $accountName = $this->getAccountName();
+        return "$accountName-pending_post";
     }
 
     function getCustomerEntity(){
         return $this->customerEntity;
     }
 
-    protected function peekNextPendingSnap(){
+    protected function peekPendingPostSnap(){
+        $lastElementIndex = -1; //+1 for first element
         $redis = $this->getRedisConnection();
-        return $redis->
+        $pendingPostListName = $this->getPendingPostListName();
+        return $redis->lGet($pendingPostListName, $lastElementIndex);
+    }
+
+    protected function popPendingPostSnap(){
+        $redis = $this->getRedisConnection();
+        $pendingPostListName = $this->getPendingPostListName();
+        return $redis->rPop($pendingPostListName);
+    }
+
+    protected function getAccountEntityManager(){
+        return $this->accountEntityManager;
 
     }
 

@@ -3,6 +3,7 @@ require_once __DIR__ . "/ormbootstrap.php";
 require_once __DIR__ . "/schema/customer.php";
 require_once __DIR__ . "/ormbootstrap.php";
 require_once __DIR__ . "/bots/posttostorybot.php";
+require_once __DIR__ . "/bots/webmoderatedbot.php";
 //require_once __DIR__ . "/constants.php";
 
 class BotFactory{
