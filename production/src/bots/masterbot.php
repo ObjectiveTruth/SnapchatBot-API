@@ -1,8 +1,11 @@
 <?php
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 require_once __DIR__ . "/../../src/schema/customer.php";
 require_once __DIR__ . "/../ormbootstrap.php";
 require_once __DIR__ . "/../../src/schema/friend.php";
+require_once __DIR__ . "/../../../vendor/autoload.php";
 
 abstract class MasterBot{
     const DEBUG = false;
@@ -227,10 +230,14 @@ abstract class MasterBot{
 
     protected function startLogger(){
         $logger = new Logger('main');
-
-        $logger->pushHandler(new StreamHandler(__DIR__.
-            '/my_app.log', Logger::DEBUG));
-        $logger->pushHandler(new FirePHPHandler());
+        $this->logger = $logger;
+        $logFileName = __DIR__.'/../../logs/'.$this->getAccountName().'_php.log';
+        //writes log files
+        $logger->pushHandler(new StreamHandler($logFileName, 
+            Logger::DEBUG));
+        //prints to stdout
+        $logger->pushHandler(new StreamHandler('php://stdout', 
+            Logger::INFO));
     }
 
 

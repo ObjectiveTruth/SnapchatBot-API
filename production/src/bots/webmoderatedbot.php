@@ -12,7 +12,7 @@ class WebModeratedBot extends MasterBot{
         $this->saveFriendByNameToDBWithDefaults($newFriend);
         $this->addFriendByName($newFriend);
         
-        echo "User: $newFriend added me!\n";
+        $this->logger->addInfo("User Added: $newFriend");
     }
 
     protected function getDefaultFriendPermission(){
@@ -20,18 +20,25 @@ class WebModeratedBot extends MasterBot{
     }
 
     protected function onNewSnap($snapObj){
-        $snapFilename = $snapObj->full_path_to_snap_file;
-        echo "Received Snap \n$snapFilename\n";
+        $snapFullPath = $snapObj->full_path_to_snap_file;
+        $filenameOnly = basename($snapFullPath);
+
+        $this->logger->addInfo("Received Snap: $filenameOnly\n");
 
         $this->markSnapIdAsViewed($snapObj->id, 2); 
 
-        $this->addFilenameToPendingApprovalList($snapFilename);
+        $this->addFilenameToPendingApprovalList($snapFullPath);
     }
 
     protected function onEndOfCycle(){
         $nextSnapToPost = $this->peekPendingPostSnap();
+
         while($nextSnapToPost != false){
+
             if($this->postSnapToStoryByFilename($nextSnapToPost) != false){
+
+                $filenameOnly = basename($nextSnapToPost);
+                $this->logger->addInfo("Posted to Story: $filenameOnly");
                 $this->popPendingPostSnap();
             }
         }

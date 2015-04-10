@@ -12,7 +12,7 @@ class PostToStoryBot extends MasterBot{
         $this->saveFriendByNameToDBWithDefaults($newFriend);
         $this->addFriendByName($newFriend);
         
-        echo "friend: $newFriend\n";
+        $this->logger->addInfo("User Added: $newFriend");
     }
 
     protected function getDefaultFriendPermission(){
@@ -21,7 +21,11 @@ class PostToStoryBot extends MasterBot{
 
     protected function onNewSnap($snapObj){
         $this->markSnapIdAsViewed($snapObj->id, 2); 
-        $this->postSnapToStoryByFilename($snapObj->full_path_to_snap_file);
+        $snapFullPath = $snapObj->full_path_to_snap_file;
+        if($this->postSnapToStoryByFilename($snapFullPath) != false){
+            $filenameOnly = basename($snapFullPath);
+            $this->logger->addInfo("Posted to Story: $filenameOnly");
+        } 
     }
 }
 
