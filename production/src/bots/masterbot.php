@@ -13,6 +13,7 @@ abstract class MasterBot{
     private $snapchat_engine;
     private $redis_client;
     private $accountEntityManager;
+    protected $logger;
 
     abstract protected function onNewFriendRequest($newFriend);
     abstract protected function onNewSnap($snap);
@@ -25,6 +26,8 @@ abstract class MasterBot{
     function initialize(){
         $botUsername = $this->customerEntity->getBotUsername();
         $accountName = $this->customerEntity->getAccountName();
+
+        $this->startLogger();
 
         $this->snapchat_engine = new Snapchat($botUsername, self::DEBUG);
         $ORMDBConnection = new ORMDBConnection($accountName);
@@ -220,6 +223,14 @@ abstract class MasterBot{
     }
 
     protected function onEndOfCycle(){
+    }
+
+    protected function startLogger(){
+        $logger = new Logger('main');
+
+        $logger->pushHandler(new StreamHandler(__DIR__.
+            '/my_app.log', Logger::DEBUG));
+        $logger->pushHandler(new FirePHPHandler());
     }
 
 
