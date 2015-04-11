@@ -15,11 +15,12 @@ define("FRIENDS_TABLE_SCHEMA", "
 define("MASTER_TABLE_SCHEMA", "
     ( ".MASTER_TABLE_ACCOUNT . "  VARCHAR(128) NOT NULL, " .
     MASTER_TABLE_BOT_TYPE . " INT NOT NULL, " .
+    "port_number INT NOT NULL, " . 
     "bot_username VARCHAR(128) NOT NULL, " .
     "bot_password VARCHAR(128) NOT NULL, " .
-        "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
-                ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY ( " . MASTER_TABLE_ACCOUNT . " ) 
+        "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP " .
+                "ON UPDATE CURRENT_TIMESTAMP, " .
+        "PRIMARY KEY ( " . MASTER_TABLE_ACCOUNT . " ) 
      );");
 
 if ($argc < 2){
@@ -33,16 +34,17 @@ $AccountName = $argv[1];
 
 echo "AccountName: " , $AccountName, "\n";
 
-
-
 createMasterDBAndTable(); //Will only creates if required
 
 createAccountDBAndTables($AccountName); //Will only Creates if required
+
+//getAndShowFreePort($AccountName);
 
 createNewAccountEntry($AccountName); //If the account already exists, will ask before overwrite
 
 
 
+//Functions
 function createMasterDBAndTable(){
 
     try {
@@ -104,29 +106,33 @@ function createNewAccountEntry($AccountName){
         $botUserType;
         $accountDBConnection = new ORMDBConnection(MASTER_SQL_DB_NAME);
         $accountEntityManager = $accountDBConnection->getEntityManager();
-        $customer = $accountEntityManager->find("Customer", $AccountName);
+        $customers = $accountEntityManager->getRepository('Customer');
+        $customer = $customers->find($AccountName);
 
-        if($customer != null){
+        if($customer == null){
+
+            $customer = new Customer($AccountName, getBotTypeFromUser());
+
+        }else{
             echo "$AccountName already exists.\n";
-            if(!doesUserWantToOverwrite()){
-                return;
-            }
-            else{
+            if(doesUserWantToOverwrite()){
                 $customer->setBotType(getBotTypeFromUser());
             }
-        }else{
-            $customer = new Customer($AccountName, getBotTypeFromUser());
+            else{
+                return;
+            }
         }
+
+
 
         $customer->setBotUsername(getBotUsernameFromUser());
         $customer->setBotPassword(getBotPasswordFromUser());
+        $customer->setPortNumber(getLowestAvailablePort($customers));
 
         $accountEntityManager->persist($customer);
         $accountEntityManager->flush();
         echo "\nCreated Customer Object:\n";
-
         print_r($customer);
-
 }
 
 function getBotTypeFromUser(){
@@ -172,7 +178,7 @@ function getBotPasswordFromUser(){
 
 
 function doesUserWantToOverwrite(){
-    echo "Overwriting will reinitialize all the settings to defaults\n";
+    echo "Overwriting will reinitialize all the settings\n";
     echo "Ovewrite? [y/n]:";
 
     $handle = fopen ("php://stdin","r");
@@ -183,6 +189,31 @@ function doesUserWantToOverwrite(){
     else{
         return false;
     }
+}
+
+function getLowestAvailablePort($customers){
+        $lowestPort = 5000;
+        $highestPort = 5500;
+        $sortedPortNumbers = $customers
+            ->findBy(array(), array('port_number' => 'ASC'));
+        if(empty($sortedPortNumbers)){
+            echo "Port Number: " . $lowestPort . "\n";
+            return $lowestPort;
+        }else{
+            $j = 0;
+            for($i = $lowestPort; $i < $highestPort; $i++){
+                $iOffset = $i - $lowestPort +1; //to compare index to size
+                if($iOffset > count($sortedPortNumbers) 
+                        || $i != $sortedPortNumbers[$j]->getPortNumber()){
+                    echo "Port Number: " . $i . "\n";
+                    return $i;
+                }else{
+                    $j++;
+                }
+            }
+        }
+
+
 }
 
 ?>

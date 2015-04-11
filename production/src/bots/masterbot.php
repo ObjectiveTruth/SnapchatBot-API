@@ -106,14 +106,14 @@ abstract class MasterBot{
         //Normalize for possible false value, if false return an empty array
         $snapchat_engine = $this->snapchat_engine;
         $thisCouldBeFalse = $snapchat_engine->getAddedFriends();
-        if($thisCouldBeFalse == false){$thisCouldBeFalse = Array();}
+        if($thisCouldBeFalse === false){$thisCouldBeFalse = Array();}
         return $thisCouldBeFalse;
     }
 
     protected function getCurrentFriends(){
         $friendslist = $snapchat_engine = $this->snapchat_engine
             ->getFriends();
-        if($friendslist == false){$friendslist = Array();}
+        if($friendslist === false){$friendslist = Array();}
         return $friendslist;
     }
 
@@ -121,7 +121,7 @@ abstract class MasterBot{
         $accountName = $this->customerEntity->getAccountName();
         $newSnaps = $this->snapchat_engine->getSnaps(true, $accountName);
         //Returns false if something went wrong with the get request to snapchat
-        if($newSnaps == false){$newSnaps = Array();}
+        if($newSnaps === false){$newSnaps = Array();}
         return $newSnaps;
     }
 
@@ -239,7 +239,5 @@ abstract class MasterBot{
         $logger->pushHandler(new StreamHandler('php://stdout', 
             Logger::INFO));
     }
-
-
 }
 ?>

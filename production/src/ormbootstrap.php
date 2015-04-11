@@ -14,7 +14,7 @@ class ORMDBConnection {
         $config = new \Doctrine\DBAL\Configuration();
         // Create a simple "default" Doctrine ORM configuration for Annotations
         $metadataconfig = Setup::createAnnotationMetadataConfiguration(array(
-            __DIR__."/src/schema"));
+            __DIR__."/schema"));
         // or if you prefer yaml or XML
         //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
         //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
