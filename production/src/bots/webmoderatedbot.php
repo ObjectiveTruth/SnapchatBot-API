@@ -28,6 +28,10 @@ class WebModeratedBot extends MasterBot{
         $this->markSnapIdAsViewed($snapObj->id, 2); 
 
         $this->addFilenameToPendingApprovalList($snapFullPath);
+
+        if($this->doesEndWithMP4($snapFullPath)){
+            $this->makeWebmPreviewVideo($snapFullPath);
+        }
     }
 
     protected function onEndOfCycle(){
@@ -41,6 +45,7 @@ class WebModeratedBot extends MasterBot{
                 $this->logger->addInfo("Posted to Story: $filenameOnly");
                 $this->popPendingPostSnap();
             }
+            $nextSnapToPost = $this->peekPendingPostSnap();
         }
         $t=time();
         echo("end of Cycle: " .date("Y-m-d_H:i:s",$t) . "\n");

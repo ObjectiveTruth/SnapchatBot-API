@@ -9,10 +9,17 @@ class basicTest extends PHPUnit_Framework_TestCase{
     protected static $dummyCustomerEntity;
 
     public static function setUpBeforeClass(){
-        self::$dummyCustomerEntity = new Customer("foo", 2, "username", "password");
+        self::$dummyCustomerEntity = new Customer("Miguel", 2, "username", "password");
         self::$dummyMasterBot = new DummyMasterBot(self::$dummyCustomerEntity);
     }
-
+    public static function tearDownAfterClass(){
+        $testFile = "objectivetruth_546915428790740918r";
+        $pathToFinalWebmFile = __DIR__.
+            "/../../../www/WebmTemp/$testFile.webm";
+        if(file_exists($pathToFinalWebmFile)){
+            unlink($pathToFinalWebmFile);
+        }
+    }
     public function testConstructorEqualsCustomer(){
         $this->assertEquals(self::$dummyCustomerEntity, 
             self::$dummyMasterBot->getCustomerEntity());
@@ -20,7 +27,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
     }
     public function testGetAccountName(){
         $this->assertEquals(
-            $this->invokeMethod(self::$dummyMasterBot, 'getAccountName'), "foo");
+            $this->invokeMethod(self::$dummyMasterBot, 'getAccountName'), "Miguel");
     }
 
     public function testGetDefaultFriendPermission(){
@@ -160,6 +167,35 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $redis = $this->invokeMethod(self::$dummyMasterBot, 
             'getRedisConnection');
        $this->assertEquals($redis->ping(), "+PONG"); 
+    }
+
+    public function testDoesEndWithMP4True(){
+        $result = $this->invokeMethod(self::$dummyMasterBot, 
+            'doesEndWithMP4', array('file.mp4'));
+        $this->assertTrue($result);
+    }
+
+    public function testDoesEndWithMP4False(){
+        $result = $this->invokeMethod(self::$dummyMasterBot, 
+            'doesEndWithMP4', array('file.none'));
+        $this->assertFalse($result);
+    }
+
+    public function testDoesEndWithMP4NoExtension(){
+        $result = $this->invokeMethod(self::$dummyMasterBot, 
+            'doesEndWithMP4', array('file'));
+        $this->assertFalse($result);
+    }
+
+    public function testMakeWebmPreviewVideo(){
+        $testFile = "objectivetruth_546915428790740918r";
+        $simpleTestVideoPath = __DIR__.
+            "/../testresources/$testFile.mp4";
+        $pathToFinalWebmFile = __DIR__.
+            "/../../../www/WebmTemp/$testFile.webm";
+        $result = $this->invokeMethod(self::$dummyMasterBot, 
+            'makeWebmPreviewVideo', array($simpleTestVideoPath));
+        $this->assertFileExists($pathToFinalWebmFile);
     }
 
     public function invokeMethod(&$object, $methodName, array $parameters = array())

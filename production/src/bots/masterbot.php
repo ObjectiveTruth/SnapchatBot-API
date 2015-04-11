@@ -239,5 +239,20 @@ abstract class MasterBot{
         $logger->pushHandler(new StreamHandler('php://stdout', 
             Logger::INFO));
     }
+
+    protected function doesEndWithMP4($filename){
+        $videoExtension = "mp4";
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        return $extension == $videoExtension;
+    }
+
+    protected function makeWebmPreviewVideo($fullPath){
+        $webmsaveDir = __DIR__."/../../../www/WebmTemp";
+        $filenameOnly = pathinfo($fullPath, PATHINFO_FILENAME);
+        $finalWebmFilePath = $webmsaveDir . "/$filenameOnly.webm";
+        $ffmpeg = FFMpeg\FFMpeg::create();
+        $video = $ffmpeg->open($fullPath);
+        $video->save(new FFMpeg\Format\Video\WebM(), $finalWebmFilePath);
+    }
 }
 ?>
