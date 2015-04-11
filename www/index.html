@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="mod-panel">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TKE Snapchat Moderator Panel</title>
+
+    <!-- Bootstrap -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="custom.css" rel="stylesheet">
+    <script src="bower_components/angular/angular.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body ng-controller="mod-panelController as modpanel">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <h1 class="navbar-text"><img alt="Brand" class="tkelogo" src="images/tkelogo.png">Snapchat Mod Panel</h1>
+                  
+            </div>
+        </div>
+    </nav>
+      <div class="row">
+        <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3 well">
+            <div class="container-fluid text-center">
+                <div class="row btn-group ">
+                    <button type="button" ng-click="modpanel.notApproved()" ng-disabled="!modpanel.snapsInQueue" class="btn btn-danger btn-lg">
+                          <span class="glyphicon glyphicon-thumbs-down glyphicon-button" aria-hidden="true"></span>
+                      </button>
+                      <div class="btn-group center-text">
+                        <button type="button" ng-disabled="!modpanel.snapsInQueue" class="glyphicon-button glyphicon btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            {{modpanel.currentSnap.username}} <span class="caret" aria-hidden="true"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-click="modpanel.banUser()" ng-class="{strikethrough: !modpanel.currentSnap.permissionCode}" href="#">Ban User <span class="glyphicon glyphicon-ban-circle glyphicon-inline" aria-hidden="true"></span></a></li>
+                        </ul>
+                    </div>
+                    <button type="button" ng-click="modpanel.approved()" ng-disabled="!modpanel.snapsInQueue" class="btn btn-success btn-lg">
+                          <span class="glyphicon glyphicon-thumbs-up glyphicon-button" aria-hidden="true"></span>
+                      </button>
+                </div>
+                <div class="row nsbp-height">
+                    &nbsp;
+                </div>
+                <div class="row ">
+                    <img alt=''  ng-hide="modpanel.isVideo" ng-src="{{modpanel.currentSnap.filename}}" class="img-responsive center-block img-rounded" src=""/>
+                    <div ng-show="modpanel.isVideo">
+                        <div class="videogular-container"> 
+                            <videogular vg-theme="modpanel.config.theme">
+                                <vg-media vg-src="modpanel.config.sources"
+                                    vg-tracks="modpanel.config.tracks">
+                                </vg-media>
+                                 
+                                <vg-controls>
+                                    <vg-play-pause-button></vg-play-pause-button>
+                                    <vg-time-display>{{ currentTime | date:'mm:ss' }}</vg-time-display>
+                                    <vg-scrub-bar>
+                                        <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                                    </vg-scrub-bar>
+                                    <vg-time-display>{{ timeLeft | date:'mm:ss' }}</vg-time-display>
+                                    <vg-volume>
+                                        <vg-mute-button></vg-mute-button>
+                                        <vg-volume-bar></vg-volume-bar>
+                                    </vg-volume>
+                                    <vg-fullscreen-button></vg-fullscreen-button>
+                                </vg-controls>
+                                 
+                                <vg-overlay-play></vg-overlay-play>
+                                <vg-poster vg-url='modpanel.config.plugins.poster'></vg-poster>
+                            </videogular>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="bower_components/videogular/videogular.js"></script>
+    <script src="bower_components/videogular-controls/vg-controls.js"></script>
+    <script src="bower_components/videogular-overlay-play/vg-overlay-play.js"></script>
+    <script src="bower_components/videogular-poster/vg-poster.js"></script>
+    <script src="bower_components/videogular-buffering/vg-buffering.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

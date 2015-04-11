@@ -1,12 +1,8 @@
 ##Original 
 .idea/
-*.jpg
-
 *.mp4
 
 *.zip
-
-*.png
 
 src/auth*.dat
 
@@ -19,6 +15,9 @@ vendor/
 
 ### Bot ###
 *.log
+
+## Snaps ###
+snaps/*/
 
 ### Vim ###
 [._]*.s[a-w][a-z]
@@ -36,3 +35,13 @@ Session.vim
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
+
+# NPM Dependency directory
+node_modules
+
+
+### Bower ###
+bower_components
+.bower-cache
+.bower-registry
+.bower-tmp

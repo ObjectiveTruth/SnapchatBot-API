@@ -1,0 +1,60 @@
+body {
+       background:      #292E37 !important;
+}
+.panel{
+    background-color:   #CCCCCC !important;
+}
+.panel-heading {
+    background-color: #000000!important;
+    color:         #C40000 !important;
+}
+.tkelogo {
+    height: 2em;
+}
+.strikethrough{
+    text-decoration: line-through;
+}
+.navbar-text{
+        color: black !important;
+        position: absolute;
+        width: 100%;
+        left: 0;
+        text-align: center;
+        margin: auto;
+}
+.glyphicon-button{
+    font-size: 2em !important;
+}
+.glyphicon-inline{
+    font-size: 1em !important;
+}
+.nsbp-height{
+    font-size: .5em !important;
+}
+.videogular-container {
+    height: 100%;
+    width: 320px;
+    margin: auto;
+    overflow: hidden;
+}
+ 
+@media (min-width: 1200px) {
+    .videogular-container {
+        height: 1170px;
+        width: 658.125px;
+    }
+}
+ 
+@media (min-width: 992px) and (max-width: 1199px) {
+    .videogular-container {
+        height: 940px;
+        width: 528.75px;
+    }
+}
+ 
+@media (min-width: 768px) and (max-width: 991px) {
+    .videogular-container {
+        height: 728px;
+        width: 409.5px;
+    }
+}
