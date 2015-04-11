@@ -1,27 +1,35 @@
-require('newrelic');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var winston = require('winston'),
-    WinstonNewrelic = require('winston-newrelic');
+var winston = require('winston');
+var utils = require('./src/utils.js');
 
 //Automatically adds a log transport to console
 
 //Constants
 var REDIS_CATEGORY_USERNAME = "USERNAME:";
-var REDIS_KEY_SNAPS_NEED_APPROVAL_LIST = "SNAPS_NEED_APPROVAL";
-var REDIS_KEY_SNAPS_AWAITING_POST_LIST = "SNAPS_AWAITING_POST";
-var SNAPS_SAVE_DIRECTORY = __dirname + "/SnapchatPics";
 var REDIS_FRIEND_CAN_POST = '1';
 var REDIS_FRIEND_CANNOT_POST = '0';
 
 //Default permission, used for getting new users, if not found, what do?
 var DEFAULT_FRIEND_PERMISSION = REDIS_FRIEND_CAN_POST;
 
+
+var args = process.argv.slice(2);
+if(args.length < 2){
+    console.log("Error: not enough arguments");
+    utils.printUsageToConsole();
+    process.exit(1);
+}
+var accountName = args[0];
+var portNumber = args[1];
+var REDIS_KEY_SNAPS_NEED_APPROVAL_LIST = accountName + "-pending_approval";
+var REDIS_KEY_SNAPS_AWAITING_POST_LIST = accountName + "-pending_post";
+var SNAPS_SAVE_DIRECTORY = __dirname + "/../snaps/_" + accountName;
+
 //Server the saved snap pics statically
 app.use(express.static(SNAPS_SAVE_DIRECTORY));
-app.use(express.static(__dirname + '/www'));
-
+app.use(express.static(__dirname + '/../www'));
 
 //AutoParses responses into json
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -108,7 +116,7 @@ app.post('/popnext/:isApproved', function(request, response){
 
 });
 
-var server = app.listen(5000, '127.0.0.1', function () {
+var server = app.listen(portNumber, '127.0.0.1', function () {
 
       var host = server.address().address
       var port = server.address().port
