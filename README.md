@@ -36,9 +36,32 @@ Interface to Snapchat
 
     ```php5 phpunit.phar ./``` to run all tests
 
+* Install Redis
+
+    Follow Directions: ```http://redis.io/topics/quickstart```
+
+    Make sure to add ```bind 127.0.0.1``` to only allow local traffic
+
+* Install Ngnix
+
+    Ngnix Server auto-starts after install finishes on port 80
+
+    ```sudo -s
+
+    nginx=stable # use nginx=development for latest development version
+
+    add-apt-repository ppa:nginx/$nginx
+
+    apt-get update 
+
+    apt-get install nginx```
+
+
 ###Notes
 
 * DO NOT Install PHPunit from apt-get
+
+* ```php vendor/bin/doctrine``` for Doctrine Helper Tools
 
     
 ### Special thanks
