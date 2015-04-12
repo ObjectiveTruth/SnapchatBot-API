@@ -4,21 +4,20 @@ require_once __DIR__ . "/src/ormbootstrap.php";
 require_once __DIR__ . "/src/schema/customer.php";
 
 //Locally Required Constants
-define("FRIENDS_TABLE_SCHEMA", "
-    (   username VARCHAR(128) NOT NULL, 
-        permission INT NOT NULL, 
-        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
-                ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY ( username ) 
-     );");
+define('FRIENDS_TABLE_SCHEMA', 
+    "(username VARCHAR(255) NOT NULL, ".
+    "permission INT NOT NULL, ".
+    "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, " .
+    "PRIMARY KEY(username)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ".
+    "ENGINE = InnoDB;");
 
 define("MASTER_TABLE_SCHEMA", "
-    ( ".MASTER_TABLE_ACCOUNT . "  VARCHAR(128) NOT NULL, " .
+    ( ".MASTER_TABLE_ACCOUNT . "  VARCHAR(255) NOT NULL, " .
     MASTER_TABLE_BOT_TYPE . " INT NOT NULL, " .
     "port_number INT NOT NULL, " . 
     "bot_username VARCHAR(128) NOT NULL, " .
     "bot_password VARCHAR(128) NOT NULL, " .
-        "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP " .
+    "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP " .
                 "ON UPDATE CURRENT_TIMESTAMP, " .
         "PRIMARY KEY ( " . MASTER_TABLE_ACCOUNT . " ) 
      );");
@@ -159,6 +158,11 @@ function createNGNIXEntry($accountName){
             echo "NGNIX server entry NOT changed\n";
             return;
         }
+    }
+    echo "Create NGINX server entry?\n";
+
+    if(doesUserAgree() == false){
+        return;
     }
 
     if(writeNewNGNIXServerEntryForAccount($accountName)){
