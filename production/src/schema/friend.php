@@ -1,7 +1,11 @@
 <?php
 // src/friends.php
+
+
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * @Entity @Table(name="friends")
+ * @ORM\Entity @Table(name="friends")
  **/
 class Friend
 {
