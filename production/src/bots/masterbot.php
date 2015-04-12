@@ -15,7 +15,7 @@ abstract class MasterBot{
     private $customerEntity;
     private $snapchat_engine;
     private $redis_client;
-    private $accountEntityManager;
+    protected $accountEntityManager;
     protected $logger;
 
     abstract protected function onNewFriendRequest($newFriend);

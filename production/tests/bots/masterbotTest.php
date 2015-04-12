@@ -206,6 +206,25 @@ class basicTest extends PHPUnit_Framework_TestCase{
 
         return $method->invokeArgs($object, $parameters);
     }
+    protected function getEmMock()
+    {   
+        $emMock  = $this->getMock('\Doctrine\ORM\EntityManager',
+            array('getRepository', 'getClassMetadata', 
+            'persist', 'flush'), array(), '', false);
+        $emMock->expects($this->any())
+            ->method('getRepository')
+            ->will($this->returnValue(new FakeRepository()));
+        $emMock->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnValue((object)array('Customer' => 'Customer')));
+        $emMock->expects($this->any())
+            ->method('persist')
+            ->will($this->returnValue(null));
+        $emMock->expects($this->any())
+            ->method('flush')
+            ->will($this->returnValue(null));
+        return $emMock;  // it tooks 13 lines to achieve mock!
+    }
 }
 
 //Implementation of MasterBot for testing
@@ -229,6 +248,9 @@ class DummyMasterBot extends MasterBot{
     }
     protected function getCurrentFriends(){
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
+    }
+    public function setEntityManager($entityManager){
+       $this->accountEntityManager = $entityManager; 
     }
 
 }
