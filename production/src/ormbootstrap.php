@@ -11,10 +11,14 @@ class ORMDBConnection {
     private $entityManager = null;
 
     function __construct($dbName){
+        $isDevMode = FALSE;
+        $isSimpleMode = FALSE;
+        $proxyDir = null;
+        $cache = null;
         $config = new \Doctrine\DBAL\Configuration();
         // Create a simple "default" Doctrine ORM configuration for Annotations
         $metadataconfig = Setup::createAnnotationMetadataConfiguration(array(
-            __DIR__."/schema"));
+            __DIR__."/schema"), $isDevMode, $proxyDir, $cache, $isSimpleMode);
         // or if you prefer yaml or XML
         //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
         //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
