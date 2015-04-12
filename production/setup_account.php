@@ -155,8 +155,8 @@ function createSQLReadOnlyUserForFrontEnd($AccountName){
         //set the PDO error mode to exception
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sqlreply = $conn->exec("grant SELECT on `$AccountName`.* to ".
-            "'$AccountName'@'127.0.0.1' identified by 'ironhorse'");
+        $sqlreply = $conn->exec("GRANT SELECT, UPDATE on `$AccountName`.* to ".
+            "'$AccountName'@'127.0.0.1' IDENTIFIED BY 'ironhorse'");
 
         if($sqlreply === false){
             die(print_r($conn->errorInfo(), true));
