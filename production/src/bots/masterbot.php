@@ -2,7 +2,7 @@
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-require_once __DIR__ . "/../../src/schema/customer.php";
+require_once __DIR__ . "/../../src/schema/domain.php";
 require_once __DIR__ . "/../ormbootstrap.php";
 require_once __DIR__ . "/../../src/schema/friend.php";
 require_once __DIR__ . "/../../../vendor/autoload.php";
@@ -12,7 +12,7 @@ abstract class MasterBot{
     const PERMISSION_CAN_POST = 0;
     const PERMISSION_CANNOT_POST = 1;
     private $isInitialized = false;
-    private $customerEntity;
+    private $domainEntity;
     private $snapchat_engine;
     private $redis_client;
     protected $accountEntityManager;
@@ -22,13 +22,13 @@ abstract class MasterBot{
     abstract protected function onNewSnap($snap);
     abstract protected function getDefaultFriendPermission();
 
-    function __construct(Customer $customerEntity){
-        $this->customerEntity = $customerEntity;
+    function __construct(Domain $domainEntity){
+        $this->domainEntity = $domainEntity;
     }
 
     function initialize(){
-        $botUsername = $this->customerEntity->getBotUsername();
-        $accountName = $this->customerEntity->getAccountName();
+        $botUsername = $this->domainEntity->getBotUsername();
+        $accountName = $this->domainEntity->getDomainName();
 
         $this->startLogger();
 
@@ -51,7 +51,7 @@ abstract class MasterBot{
         if(!$this->isInitialized){
             throw new Exception('Must call .initialize() first');};
 
-        $botPassword = $this->customerEntity->getBotPassword();
+        $botPassword = $this->domainEntity->getBotPassword();
 
         $isFirstCycle = true;
 
@@ -98,7 +98,7 @@ abstract class MasterBot{
     }
 
     protected function refreshToken(){
-        $botPassword = $this->customerEntity->getBotPassword();
+        $botPassword = $this->domainEntity->getBotPassword();
         $this->snapchat_engine->login($botPassword);
     }
 
@@ -118,7 +118,7 @@ abstract class MasterBot{
     }
 
     protected function getNewSnaps(){
-        $accountName = $this->customerEntity->getAccountName();
+        $accountName = $this->domainEntity->getDomainName();
         $newSnaps = $this->snapchat_engine->getSnaps(true, $accountName);
         //Returns false if something went wrong with the get request to snapchat
         if($newSnaps === false){$newSnaps = Array();}
@@ -145,7 +145,7 @@ abstract class MasterBot{
     }
 
     protected function doesFriendNameExist($friendName){
-        $accountEntityManager = $this->getAccountEntityManager();
+        $accountEntityManager = $this->getDomainEntityManager();
         $friend = $accountEntityManager->find("Friend", $friendName);
         if($friend == null){
             return false;
@@ -156,7 +156,7 @@ abstract class MasterBot{
 
     protected function saveFriendByNameToDBWithDefaults($newFriendName){
         //Only adds if entry doesn't already exist
-        $accountEntityManager = $this->getAccountEntityManager();
+        $accountEntityManager = $this->getDomainEntityManager();
         if(!$this->doesFriendNameExist($newFriendName)){
 
             $friend = new Friend($newFriendName, 
@@ -167,13 +167,13 @@ abstract class MasterBot{
     }
 
     protected function getPermissionForFriendByUsername($friendName){
-        $accountEntityManager = $this->getAccountEntityManager();
+        $accountEntityManager = $this->getDomainEntityManager();
         return $accountEntityManager->find("Friend", $friendName)
             ->getPermission();
     }
 
-    protected function getAccountName(){
-        return $this->customerEntity->getAccountName();
+    protected function getDomainName(){
+        return $this->domainEntity->getDomainName();
     }
 
     private function getRedisConnection(){
@@ -194,17 +194,17 @@ abstract class MasterBot{
     }
 
     protected function getPendingApprovalListName(){
-        $accountName = $this->getAccountName();
+        $accountName = $this->getDomainName();
         return "$accountName-pending_approval";
     }
 
     protected function getPendingPostListName(){
-        $accountName = $this->getAccountName();
+        $accountName = $this->getDomainName();
         return "$accountName-pending_post";
     }
 
-    function getCustomerEntity(){
-        return $this->customerEntity;
+    function getDomainEntity(){
+        return $this->domainEntity;
     }
 
     protected function peekPendingPostSnap(){
@@ -220,7 +220,7 @@ abstract class MasterBot{
         return $redis->rPop($pendingPostListName);
     }
 
-    protected function getAccountEntityManager(){
+    protected function getDomainEntityManager(){
         return $this->accountEntityManager;
 
     }
@@ -231,7 +231,7 @@ abstract class MasterBot{
     protected function startLogger(){
         $logger = new Logger('main');
         $this->logger = $logger;
-        $logFileName = __DIR__.'/../../logs/'.$this->getAccountName().'_php.log';
+        $logFileName = __DIR__.'/../../logs/'.$this->getDomainName().'_php.log';
         //writes log files
         $logger->pushHandler(new StreamHandler($logFileName, 
             Logger::DEBUG));

@@ -2,15 +2,15 @@
 
 require_once __DIR__ . "/../../src/bots/masterbot.php";
 require_once __DIR__ . "/../../../src/snapchat.php";
-require_once __DIR__ . "/../../src/schema/customer.php";
+require_once __DIR__ . "/../../src/schema/domain.php";
 
 class basicTest extends PHPUnit_Framework_TestCase{
     protected static $dummyMasterBot;
-    protected static $dummyCustomerEntity;
+    protected static $dummyDomainEntity;
 
     public static function setUpBeforeClass(){
-        self::$dummyCustomerEntity = new Customer("Miguel", 2, "username", "password");
-        self::$dummyMasterBot = new DummyMasterBot(self::$dummyCustomerEntity);
+        self::$dummyDomainEntity = new Domain("Miguel", 2, "username", "password");
+        self::$dummyMasterBot = new DummyMasterBot(self::$dummyDomainEntity);
     }
     public static function tearDownAfterClass(){
         $testFile = "objectivetruth_546915428790740918r";
@@ -20,14 +20,14 @@ class basicTest extends PHPUnit_Framework_TestCase{
             unlink($pathToFinalWebmFile);
         }
     }
-    public function testConstructorEqualsCustomer(){
-        $this->assertEquals(self::$dummyCustomerEntity, 
-            self::$dummyMasterBot->getCustomerEntity());
+    public function testConstructorEqualsDomain(){
+        $this->assertEquals(self::$dummyDomainEntity, 
+            self::$dummyMasterBot->getDomainEntity());
 
     }
-    public function testGetAccountName(){
+    public function testGetDomainName(){
         $this->assertEquals(
-            $this->invokeMethod(self::$dummyMasterBot, 'getAccountName'), "Miguel");
+            $this->invokeMethod(self::$dummyMasterBot, 'getDomainName'), "Miguel");
     }
 
     public function testGetDefaultFriendPermission(){
@@ -37,7 +37,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
     }
 
     /**
-     * @depends testConstructorEqualsCustomer
+     * @depends testConstructorEqualsDomain
      * @expectedException   Exception
      * @expectedExceptionMessage Must call .initialize() first
      */
@@ -58,7 +58,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testonFriendRequestCalledForNewFriendsArraySize(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest', 
                 'saveFriendByNameToDBWithDefaults'))
             ->getMock();
@@ -75,7 +75,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testsaveFriendByNameToDBWithDefaults(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest', 
                 'saveFriendByNameToDBWithDefaults'))
             ->getMock();
@@ -93,7 +93,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testonNewSnapForNewSnapsArraySize(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest',
                 'saveFriendByNameToDBWithDefaults'))
             ->getMock();
@@ -110,7 +110,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testEmptyGetFriends(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest',
                 'saveFriendByNameToDBWithDefaults', 'getCurrentFriends'))
             ->getMock();
@@ -129,7 +129,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testEmptyGetSnaps(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest',
                 'saveFriendByNameToDBWithDefaults', 'getCurrentFriends',
                 'getNewSnaps'))
@@ -149,7 +149,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
      */
     public function testEmptyGetNewFriends(){
         $mock = $this->getMockBuilder('DummyMasterBot')
-            ->setConstructorArgs(Array(self::$dummyCustomerEntity))
+            ->setConstructorArgs(Array(self::$dummyDomainEntity))
             ->setMethods(array('onNewSnap', 'onNewFriendRequest',
                 'saveFriendByNameToDBWithDefaults', 'getCurrentFriends',
                 'getNewSnaps', 'getNewFriends'))
@@ -216,7 +216,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
             ->will($this->returnValue(new FakeRepository()));
         $emMock->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue((object)array('Customer' => 'Customer')));
+            ->will($this->returnValue((object)array('Domain' => 'Domain')));
         $emMock->expects($this->any())
             ->method('persist')
             ->will($this->returnValue(null));
@@ -250,7 +250,7 @@ class DummyMasterBot extends MasterBot{
         return Array("Alex", "Caleb", "Elias", "Thomas", "Anthony");
     }
     public function setEntityManager($entityManager){
-       $this->accountEntityManager = $entityManager; 
+       $this->domainEntityManager = $entityManager; 
     }
 
 }

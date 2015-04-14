@@ -5,21 +5,21 @@
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Customer
+ * Domain
  *
- * @ORM\Table(name="MASTER_ACCOUNTS_CONFIG")
+ * @ORM\Table(name="domains")
  * @ORM\Entity
  */
-class Customer
+class Domain
 {
     /**
      * @var string
      *
-     * @ORM\Column(name="accountname", type="string", precision=0, scale=0, nullable=false, unique=false)
+     * @ORM\Column(name="domainname", type="string", precision=0, scale=0, nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $accountname;
+    private $domainName;
 
     /**
      * @var integer
@@ -49,32 +49,32 @@ class Customer
      */
     private $port_number;
 
-    function __construct($accountname, $bot_type){
-        $this->accountname= $accountname;
+    function __construct($domainName, $bot_type){
+        $this->domainName= $domainName;
         $this->bot_type = $bot_type;
     }
 
     /**
-     * Set accountname
+     * Set domainName
      *
-     * @param string $accountname
+     * @param string $domainName
      * @return Customer
      */
-    public function setAccountName($accountname)
+    public function setDomainName($domainName)
     {
-        $this->accountname = $accountname;
+        $this->domainName = $domainName;
 
         return $this;
     }
 
     /**
-     * Get accountname
+     * Get domainName
      *
      * @return string 
      */
-    public function getAccountName()
+    public function getDomainName()
     {
-        return $this->accountname;
+        return $this->domainName;
     }
 
     /**

@@ -1,15 +1,15 @@
 <?php
 
-function createNGNIXEntry($accountName){
+function createNGNIXEntry($domainName){
     if(isNGNIXSetup() == false){
-        echo " Couldn't Create NGNIXEntry for account $accountName\n";
+        echo " Couldn't Create NGNIXEntry for domain $domainName\n";
         return;
     }
-    if(doesNGNIXServerExistForAccount($accountName)){
-        echo "Server entry already exists for that account\n";
+    if(doesNGNIXServerExistForDomain($domainName)){
+        echo "Server entry already exists for that domain\n";
         if(doesUserWantToOverwrite()){
-            echo "Creating new server for entry $accountName\n";
-            deleteSymbolicLinkIfExistsForAccount($accountName);
+            echo "Creating new server for entry $domainName\n";
+            deleteSymbolicLinkIfExistsForDomain($domainName);
         }else{
             echo "NGNIX server entry NOT changed\n";
             return;
@@ -21,7 +21,7 @@ function createNGNIXEntry($accountName){
         return;
     }
 
-    if(writeNewNGNIXServerEntryForAccount($accountName)){
+    if(writeNewNGNIXServerEntryForDomain($domainName)){
         echo "Successfully created Server Entry\n";
     }else{
         echo "Error: Failed to create server entry\n";
@@ -39,18 +39,18 @@ function createNGNIXEntry($accountName){
     }
 }
 
-function writeNewNGNIXServerEntryForAccount($accountName){
-    global $accountObj;
-    $NGNIXAvailableFile = "/etc/nginx/sites-available/" . $accountName;
-    $NGNIXEnabledFile = "/etc/nginx/sites-enabled/" . $accountName;
-    if($accountObj == null){
-        echo "Error: No account found, did you run createNGNIXEntry?\n";
+function writeNewNGNIXServerEntryForDomain($domainName){
+    global $domainObj;
+    $NGNIXAvailableFile = "/etc/nginx/sites-available/" . $domainName;
+    $NGNIXEnabledFile = "/etc/nginx/sites-enabled/" . $domainName;
+    if($domainObj == null){
+        echo "Error: No domain found, did you run createNGNIXEntry?\n";
         return false;
     }
-    $portNumber = $accountObj->getPortNumber();
+    $portNumber = $domainObj->getPortNumber();
     $serverContents = 
     "server {"                                      . PHP_EOL .
-    "   server_name $accountName.objectivetruth.ca;"    . PHP_EOL .
+    "   server_name $domainName.objectivetruth.ca;"    . PHP_EOL .
     "   location / {"                               . PHP_EOL . 
     "      proxy_pass    http://127.0.0.1:$portNumber/;"   . PHP_EOL . 
     "   }"                                          . PHP_EOL . 
@@ -82,8 +82,8 @@ function isNGNIXSetup(){
     }
 }
 
-function doesNGNIXServerExistForAccount($accountName){
-    $NGNIXServer = "/etc/nginx/sites-available/" . $accountName;
+function doesNGNIXServerExistForDomain($domainName){
+    $NGNIXServer = "/etc/nginx/sites-available/" . $domainName;
     if(file_exists($NGNIXServer)){
         return true;
     }else{
@@ -182,8 +182,8 @@ function getLowestAvailablePort($customers){
     }
 }
 
-function deleteSymbolicLinkIfExistsForAccount($accountName){
-    $NGNIXEnabledFile = "/etc/nginx/sites-enabled/" . $accountName;
+function deleteSymbolicLinkIfExistsForDomain($domainName){
+    $NGNIXEnabledFile = "/etc/nginx/sites-enabled/" . $domainName;
     if(file_exists($NGNIXEnabledFile)){
         return unlink($NGNIXEnabledFile);
     }else{
