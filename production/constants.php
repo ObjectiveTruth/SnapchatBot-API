@@ -14,6 +14,8 @@ define('SQLDBPASSWORD', "devtest");
 
 define('FRIENDS_TABLE_NAME', 'friends');
 
+define('USERS_TABLE_NAME', 'users');
+
 define('MASTER_TABLE_BOT_TYPE', 'bot_type');
 
 define('TABLE_ID', '_id');

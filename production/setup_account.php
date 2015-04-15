@@ -12,14 +12,20 @@ define('FRIENDS_TABLE_SCHEMA',
     "PRIMARY KEY(username)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ".
     "ENGINE = InnoDB;");
 
+define('USERS_TABLE_SCHEMA',
+    "(username VARCHAR(255) NOT NULL, ".
+    "password VARCHAR(255) NOT NULL, ".
+    "permission INT NOT NULL, ".
+    "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, " .
+    "PRIMARY KEY(username)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ".
+    "ENGINE = InnoDB;");
+
 define("DOMAINS_TABLE_SCHEMA", "
     ( ".DOMAINNAME . "  VARCHAR(255) NOT NULL, " .
     MASTER_TABLE_BOT_TYPE . " INT NOT NULL, " .
     "port_number INT NOT NULL, " . 
     "bot_username VARCHAR(128) NOT NULL, " .
     "bot_password VARCHAR(128) NOT NULL, " .
-    "domain_username VARCHAR(128) NOT NULL," .
-    "domain_password VARCHAR(128) NOT NULL," .
     "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP " .
                 "ON UPDATE CURRENT_TIMESTAMP, " .
         "PRIMARY KEY ( " . DOMAINNAME . " ) 
@@ -97,12 +103,21 @@ function createAccountDBAndEmptyTables($domainName){
         echo "Created $domainName Database or already exists\n";
 
         $conn->exec("USE " . $domainName);
-        $sqlreply = $conn->exec("CREATE TABLE IF NOT EXISTS " . FRIENDS_TABLE_NAME . 
+        echo "Creating Friends Table if it doesn't exist\n";
+        $sqlreply = $conn->exec("CREATE TABLE IF NOT EXISTS " .
+            FRIENDS_TABLE_NAME .
             " " . FRIENDS_TABLE_SCHEMA);
         if($sqlreply === false){
             die(print_r($conn->errorInfo(), true));
         }
-        echo "Created Friends Table Successfully or it already existed\n";
+
+        echo "Creating Users Table if it doesn't exist\n";
+        $sqlreply = $conn->exec("CREATE TABLE IF NOT EXISTS " .
+            USERS_TABLE_NAME .
+            " " . USERS_TABLE_SCHEMA);
+        if($sqlreply === false){
+            die(print_r($conn->errorInfo(), true));
+        }
 
         $conn = null;
     }
@@ -141,8 +156,6 @@ function createDomainEntry($domainName){
 
         $domain->setBotUsername(getBotUsernameFromUser());
         $domain->setBotPassword(getBotPasswordFromUser());
-        $domain->setDomainUsername(getDomainUsernameFromUser());
-        $domain->setDomainPassword(getDomainPasswordFromUser());
         $domainObj = $domain;
 
         $accountEntityManager->persist($domain);

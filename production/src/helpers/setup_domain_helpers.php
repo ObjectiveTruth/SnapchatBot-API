@@ -130,25 +130,6 @@ function getBotPasswordFromUser(){
     return $trimmedline;
 }
 
-function getDomainUsernameFromUser(){
-    $trimmedline; $domain_username;
-    $handle = fopen ("php://stdin","r");
-
-    echo "Domain Username? (can be empty but won't be able to login):";
-    $trimmedline = trim(fgets($handle));
-    return $trimmedline;
-}
-
-function getDomainPasswordFromUser(){
-    $trimmedline; $domain_password;
-    $handle = fopen ("php://stdin","r");
-
-    echo "Domain Password? (can be empty but won't be able to login):";
-    $trimmedline = trim(fgets($handle));
-    return $trimmedline;
-}
-
-
 function doesUserWantToOverwrite(){
     echo "Ovewrite? [y/n]:";
 
