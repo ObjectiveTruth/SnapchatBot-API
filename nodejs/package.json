@@ -26,7 +26,8 @@
     "passport-local": "~1.0.0",
     "express-session": "~1.11.1",
     "connect-redis": "~2.2.0",
-    "connect-flash": "~0.1.1"
+    "connect-flash": "~0.1.1",
+    "commander": "~2.8.0"
   },
   "devDependencies": {}
 }

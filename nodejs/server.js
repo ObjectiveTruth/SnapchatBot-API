@@ -3,6 +3,8 @@ var utils = require('./src/utils.js');
 if(utils.isInvalidInput(process.argv)){
     utils.printUsageThenQuit();
 }
+//this require has to be at the top
+var program = require('./src/commandline.js');
 var domainName = process.argv[2];
 var portNumber = process.argv[3];
 
@@ -30,7 +32,7 @@ passport.use('login', new LocalStrategy({
         passReqToCallback: true
     },
     function(req, username, password, done) {
-        dbORM.domain.find(username).then(function(user) {
+        dbORM.users.find(username).then(function(user) {
             if (user == null) {
                 winston.info('User Not Found with username: ' + username);
                 return done(null, false, 
@@ -55,28 +57,6 @@ app.use(express.static(__dirname + '/../www'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//Use session IDs
-app.use(expressSession({
-    client: redisClient,
-    secret: '8340fghj3uis',
-    ttl: 6000,
-    saveUninitialized: true,
-    resave: true
-}));
-
-app.use(flash());
-
-app.get('/', function(req, res) {
-    //Display the Login page with any flash message, if any
-    res.render('index', { message: req.flash('message') });
-});
-
-/* Handle Login POST */
-router.post('/login', passport.authenticate('login', {
-    successRedirect: '/home',
-    failureRedirect: '/',
-    failureFlash : true 
-}));
 
 //Gets the next snap to be evaluated
 app.get('/getnext', function (req, response){
@@ -168,7 +148,7 @@ app.post('/popnext/:isApproved', function(request, response){
 
 });
 
-var server = app.listen(portNumber, '127.0.0.1', function () {
+var server = app.listen(portNumber, program.acceptConnectionsFrom, function () {
 
       var host = server.address().address
       var port = server.address().port
