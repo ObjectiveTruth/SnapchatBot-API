@@ -3,7 +3,8 @@ var sequelizeDomain = new Sequelize(
         'snapchatbot_db', 'root', 'devtest', 
         {
             host: 'localhost',
-            dialect: 'mysql'
+            dialect: 'mysql',
+            logging: false
         });
 
 var sequelizeFriends; 
@@ -18,10 +19,11 @@ orm.initialize = function(domainName){
     orm.domainName = domainName;
 
     sequelizeFriends = new Sequelize(
-        'domainName', 'root', 'devtest', 
+        domainName, domainName, 'ironhorse', 
         {
             host: 'localhost',
-            dialect: 'mysql'
+            dialect: 'mysql',
+            logging: false
         });
 
     orm.friend = sequelizeFriends.define('friends', {
@@ -41,7 +43,7 @@ orm.initialize = function(domainName){
 }
 
 
-orm.customer = sequelizeDomain.define('domains', {
+orm.domain = sequelizeDomain.define('domains', {
       accountName: {
           type: Sequelize.STRING,
           field: 'domainname',
@@ -50,7 +52,15 @@ orm.customer = sequelizeDomain.define('domains', {
       botType:{
           type: Sequelize.INTEGER,
           field: 'bot_type'
-      } 
+      },
+      domainUsername: {
+          type: Sequelize.STRING,
+          field: 'domain_username'
+      },
+      domainPassword: {
+          type: Sequelize.STRING,
+          field: 'domain_password'
+      }
 }, {
     timestamps:false
 });

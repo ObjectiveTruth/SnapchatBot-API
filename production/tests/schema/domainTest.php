@@ -36,6 +36,23 @@ class DomainTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals("password", self::$dummyDomain->getBotPassword());
     }
 
+    public function testGetSetPortNumber(){
+        self::$dummyDomain->setPortNumber(5000);
+
+        $this->assertEquals(5000, self::$dummyDomain->getPortNumber());
+    }
+
+    public function testGetSetDomainUsername(){
+        self::$dummyDomain->setDomainUsername("Alex");
+
+        $this->assertEquals("Alex", self::$dummyDomain->getDomainUsername());
+    }
+
+    public function testGetSetDomainPassword(){
+        self::$dummyDomain->setDomainPassword("keyboardcat");
+
+        $this->assertEquals("keyboardcat", self::$dummyDomain->getDomainPassword());
+    }
 }
 
 

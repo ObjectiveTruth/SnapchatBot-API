@@ -18,6 +18,8 @@ define("DOMAINS_TABLE_SCHEMA", "
     "port_number INT NOT NULL, " . 
     "bot_username VARCHAR(128) NOT NULL, " .
     "bot_password VARCHAR(128) NOT NULL, " .
+    "domain_username VARCHAR(128) NOT NULL," .
+    "domain_password VARCHAR(128) NOT NULL," .
     "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP " .
                 "ON UPDATE CURRENT_TIMESTAMP, " .
         "PRIMARY KEY ( " . DOMAINNAME . " ) 
@@ -139,6 +141,8 @@ function createDomainEntry($domainName){
 
         $domain->setBotUsername(getBotUsernameFromUser());
         $domain->setBotPassword(getBotPasswordFromUser());
+        $domain->setDomainUsername(getDomainUsernameFromUser());
+        $domain->setDomainPassword(getDomainPasswordFromUser());
         $domainObj = $domain;
 
         $accountEntityManager->persist($domain);
@@ -171,7 +175,6 @@ function createSQLReadOnlyUserForFrontEnd($domainName){
     {
         echo "Connection failed: \n" . $e->getMessage();
     }
-
 }
 
 ?>

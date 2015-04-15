@@ -113,7 +113,6 @@ return $bot_type;
 }
 
 function getBotUsernameFromUser(){
-    //Loop until valid input and return
     $trimmedline; $bot_username;
     $handle = fopen ("php://stdin","r");
 
@@ -123,11 +122,28 @@ function getBotUsernameFromUser(){
 }
 
 function getBotPasswordFromUser(){
-    //Loop until valid input and return
     $trimmedline; $bot_password;
     $handle = fopen ("php://stdin","r");
 
     echo "Bot Password? (can be empty but won't be usable):";
+    $trimmedline = trim(fgets($handle));
+    return $trimmedline;
+}
+
+function getDomainUsernameFromUser(){
+    $trimmedline; $domain_username;
+    $handle = fopen ("php://stdin","r");
+
+    echo "Domain Username? (can be empty but won't be able to login):";
+    $trimmedline = trim(fgets($handle));
+    return $trimmedline;
+}
+
+function getDomainPasswordFromUser(){
+    $trimmedline; $domain_password;
+    $handle = fopen ("php://stdin","r");
+
+    echo "Domain Password? (can be empty but won't be able to login):";
     $trimmedline = trim(fgets($handle));
     return $trimmedline;
 }
