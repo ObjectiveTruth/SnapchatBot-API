@@ -1,14 +1,13 @@
 <?php
-// src/friends.php
 
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="friends")
+ * @ORM\Table(name="users")
  * @ORM\Entity 
  **/
-class Friend
+class User
 {
     /** 
      * @var string
@@ -17,6 +16,14 @@ class Friend
       * @ORM\Id
       */
     protected $username;
+
+    /** 
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", precision=0, scale=0, nullable=false, unique=false)
+      */
+    protected $password;
+
     /**
      * @var integer
      *
@@ -29,14 +36,24 @@ class Friend
         $this->permission = $permission;
     }
 
-    public function getName()
+    public function getUsername()
     {
         return $this->username;
     }
 
-    public function setName($username)
+    public function setUsername($username)
     {
         $this->username = $username;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 
     public function getPermission()

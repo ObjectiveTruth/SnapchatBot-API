@@ -100,20 +100,41 @@ function getBotTypeFromUser(){
         echo "BotType? (leave empty for default:0):";
         $trimmedline = trim(fgets($handle));
 
-} while(!(is_numeric($trimmedline) || empty($trimmedline)));
+    } while(!(is_numeric($trimmedline) || empty($trimmedline)));
 
-if(empty($trimmedline)){
-    $bot_type = 0;
-}
-else{
-    $bot_type = intval($trimmedline);
+    if(empty($trimmedline)){
+        $bot_type = 0;
+    }
+    else{
+        $bot_type = intval($trimmedline);
+    }
+
+    return $bot_type;
 }
 
-return $bot_type;
+function getIntFromUserWithMessageAndDefault($message, $defaultInt){
+    //Loop until valid input and return
+    $trimmedline; $cleanInt;
+    $handle = fopen ("php://stdin","r");
+
+    do{
+        echo $message;
+        $trimmedline = trim(fgets($handle));
+
+    } while(!(is_numeric($trimmedline) || empty($trimmedline)));
+
+    if(empty($trimmedline)){
+        $cleanInt = $defaultInt;
+    }
+    else{
+        $cleanInt = intval($trimmedline);
+    }
+
+    return $cleanInt;
 }
 
 function getBotUsernameFromUser(){
-    $trimmedline; $bot_username;
+    $trimmedline;
     $handle = fopen ("php://stdin","r");
 
     echo "Bot Username? (can be empty but won't be usable):";
@@ -122,12 +143,65 @@ function getBotUsernameFromUser(){
 }
 
 function getBotPasswordFromUser(){
-    $trimmedline; $bot_password;
+    $trimmedline;
     $handle = fopen ("php://stdin","r");
 
     echo "Bot Password? (can be empty but won't be usable):";
     $trimmedline = trim(fgets($handle));
     return $trimmedline;
+}
+
+function getStringFromUserWithMessage($variableName){
+    $trimmedline;
+    $handle = fopen ("php://stdin","r");
+
+    echo $variableName;
+    $trimmedline = trim(fgets($handle));
+    return $trimmedline;
+}
+
+
+function interactivelyCreateNewUsersForDomain($domainName){
+    $domainSpecificORM = new ORMDBConnection($domainName);
+    $domainSpecificEntityManager = $domainSpecificORM->getEntityManager();
+    $permissionsMessage = "Permission(default 0):";
+    $passwordMessage = "Password:";
+    //Loop until no more users are to be created
+    //Checks if the username already exists
+    $makeAnotherUser = true;
+    while($makeAnotherUser){
+        $potentialUsername = getStringFromUserWithMessage("Username:");
+
+        $users = $domainSpecificEntityManager->getRepository('User');
+        $user = $users->find($potentialUsername);
+
+        if($user == null){
+            $user = new User($potentialUsername, 
+                getIntFromUserWithMessageAndDefault($permissionsMessage, 0));
+            $user->setPassword(
+                getStringFromUserWithMessage($passwordMessage));
+        }else{
+            echo "Username: $potentialUsername already exists, overwrite?";
+            if(doesUserAgree()){
+                $user->setPermission(
+                    getIntFromUserWithMessageAndDefault($permissionsMessage, 0));
+                $user->setPassword(
+                    getStringFromUserWithMessage($passwordMessage));
+            }else{
+                //Do nothing, doesn't want to overwrite
+            }
+        }
+        $domainSpecificEntityManager->persist($user);
+        $makeAnotherUser = doesUserWantToMakeAnotherUser();
+    }
+
+    echo "Pushing new users to database if any\n";
+    $domainSpecificEntityManager->flush();
+}
+
+function doesUserWantToMakeAnotherUser(){
+    echo "Make Another User?";
+    return doesUserAgree();
 }
 
 function doesUserWantToOverwrite(){
@@ -143,6 +217,10 @@ function doesUserWantToOverwrite(){
     }
 }
 
+function doesUserWantToCreateAUser(){
+    echo "Create new user?";
+    return doesUserAgree();
+}
 function doesUserAgree(){
     echo "[y/n]:";
 

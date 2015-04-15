@@ -2,6 +2,7 @@
 require_once "constants.php";
 require_once __DIR__ . "/src/ormbootstrap.php";
 require_once __DIR__ . "/src/schema/domain.php";
+require_once __DIR__ . "/src/schema/user.php";
 require_once __DIR__ . "/src/helpers/setup_domain_helpers.php";
 
 //Locally Required Constants
@@ -46,6 +47,12 @@ echo "DomainName: " , $domainName, "\n";
 createCustomersDBAndEmptyTable(); //Will only creates if required
 
 createAccountDBAndEmptyTables($domainName); //User's own DB for friends etc..
+
+//showUsersForDomain($domainName);
+
+if(doesUserWantToCreateAUser()){
+    interactivelyCreateNewUsersForDomain($domainName);
+}
 
 createDomainEntry($domainName); //Asks before overwriteing
 
@@ -141,7 +148,7 @@ function createDomainEntry($domainName){
             $domain->setPortNumber(getLowestAvailablePort($domains));
 
         }else{
-            echo "$domainName already exists.\n";
+            echo "Domain: $domainName already exists.\n";
             echo "Overwriting will reinitialize all the settings\n";
             if(doesUserWantToOverwrite()){
                 $domain->setBotType(getBotTypeFromUser());
