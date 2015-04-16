@@ -3,6 +3,7 @@
 
 
 program = require('commander');
+program.acceptConnectionsFrom = '127.0.0.1';
 
 
 program
@@ -17,8 +18,7 @@ program
 
 if(program.dev){
     program.acceptConnectionsFrom = '0.0.0.0';
-}else{
-    program.acceptConnectionsFrom = '127.0.0.1';
+    console.log("Dev mode active: accepting all incoming connections");
 }
 
 if(typeof program.portNumber != "number"){
