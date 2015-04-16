@@ -1,4 +1,5 @@
 var Sequelize = require('sequelize');
+var bcrypt = require('bcrypt-nodejs');
 var sequelizeDomainSettings = new Sequelize(
         'snapchatbot_db', 'root', 'devtest', 
         {
@@ -53,23 +54,54 @@ orm.initialize = function(domainName){
         permission: {
             type: Sequelize.INTEGER,
             field: 'permission'
+        },
+        email: {
+            type: Sequelize.STRING,
+            field: 'email'
+        },
+        resetPasswordToken: {
+            type: Sequelize.STRING,
+            field: 'reset_password_token'
+        },
+        resetPasswordExpire: {
+            type: Sequelize.DATE,
+            field: 'reset_password_expire'
         }
     },{
+        instanceMethods: {
+            setPassword: function(password, done) {
+                return bcrypt.genSalt(10, function(err, salt) {
+                    return bcrypt.hash(password, 
+                        salt, 
+                        function(error, encrypted) {
+                            this.password = encrypted;
+                            this.salt = salt;
+                            return done();}
+            );});},
+             comparePassword : function(candidatePassword, cb) {
+                 bcrypt.compare(candidatePassword, 
+                     this.getDataValue('password'), 
+                     function(err, isMatch) {
+                         if(err) return cb(err);
+                         cb(null, isMatch);
+                     });
+             }
+        },
         timestamps: false
     });
 }
 
 
 orm.domain = sequelizeDomainSettings.define('domains', {
-      accountName: {
-          type: Sequelize.STRING,
-          field: 'domainname',
-          primaryKey: true
-      },
-      botType:{
-          type: Sequelize.INTEGER,
-          field: 'bot_type'
-      }
+    accountName: {
+        type: Sequelize.STRING,
+field: 'domainname',
+primaryKey: true
+    },
+botType:{
+    type: Sequelize.INTEGER,
+field: 'bot_type'
+}
 }, {
     timestamps:false
 });

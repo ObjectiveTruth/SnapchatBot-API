@@ -10,6 +10,11 @@ var winston = require('winston');
 var expressSession = require('express-session');
 var redisStore = require('connect-redis')(expressSession);
 var flash = require('connect-flash');
+var async = require('async');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+var cookieParser = require('cookie-parser');
+
 
 var constants = require('./src/constants');
 constants.createConstants(program.domainName);
@@ -48,9 +53,25 @@ passport.use('login', new LocalStrategy({
 app.use(express.static(constants.SNAPS_SAVE_DIRECTORY));
 app.use(express.static(__dirname + '/../www'));
 
-//AutoParses responses into json
-app.use(bodyParser.urlencoded({ extended: true }));
+//AutoParses responses into json and gets cookies
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser());
+app.use(expressSession({ 
+
+    name: program.domainName,
+    resave: false,
+    saveUninitialized: false,
+    store: new redisStore({
+        host: 'localhost',
+        port: 6379,
+        client: redisClient
+    }),
+    secret: 'somecrazyhash' 
+
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 //Gets the next snap to be evaluated
