@@ -14,10 +14,13 @@ class basicTest extends PHPUnit_Framework_TestCase{
     }
     public static function tearDownAfterClass(){
         $testFile = "objectivetruth_546915428790740918r";
-        $pathToFinalWebmFile = __DIR__.
-            "/../../../webmtemp/$testFile.webm";
+        $webmDir = __DIR__ . "/../../../webmtemp/_Miguel";
+        $pathToFinalWebmFile = $webmDir."/$testFile.webm";
         if(file_exists($pathToFinalWebmFile)){
             unlink($pathToFinalWebmFile);
+        }
+        if(is_dir($webmDir)){
+            @rmdir($webmDir);
         }
     }
     public function testConstructorEqualsDomain(){
@@ -192,7 +195,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $simpleTestVideoPath = __DIR__.
             "/../testresources/$testFile.mp4";
         $pathToFinalWebmFile = __DIR__.
-            "/../../../webmtemp/$testFile.webm";
+            "/../../../webmtemp/_Miguel/$testFile.webm";
         $result = $this->invokeMethod(self::$dummyMasterBot, 
             'makeWebmPreviewVideo', array($simpleTestVideoPath));
         $this->assertFileExists($pathToFinalWebmFile);
