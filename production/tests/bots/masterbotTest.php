@@ -15,7 +15,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
     public static function tearDownAfterClass(){
         $testFile = "objectivetruth_546915428790740918r";
         $pathToFinalWebmFile = __DIR__.
-            "/../../../www/WebmTemp/$testFile.webm";
+            "/../../../webmtemp/$testFile.webm";
         if(file_exists($pathToFinalWebmFile)){
             unlink($pathToFinalWebmFile);
         }
@@ -192,7 +192,7 @@ class basicTest extends PHPUnit_Framework_TestCase{
         $simpleTestVideoPath = __DIR__.
             "/../testresources/$testFile.mp4";
         $pathToFinalWebmFile = __DIR__.
-            "/../../../www/WebmTemp/$testFile.webm";
+            "/../../../webmtemp/$testFile.webm";
         $result = $this->invokeMethod(self::$dummyMasterBot, 
             'makeWebmPreviewVideo', array($simpleTestVideoPath));
         $this->assertFileExists($pathToFinalWebmFile);

@@ -1,7 +1,18 @@
-exports.printUsageThenQuit = function(){
-    console.log("\nUsage: nodejs server.js <DomainName> <PortNumber>");
-    console.log("DomainName: Domain primary key for SQL");
-    console.log("PortNumber: Port to listen on");
-    process.exit(1)
+var path = require('path');
+
+exports.loggedIn = function(req, res, next){
+    if (req.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+exports.isVideo = function(filename){
+    return path.extname(filename) == '.mp4';
+};
+
+exports.isImage = function(filename){
+    return path.extname(filename) == '.jpg';
 };
 

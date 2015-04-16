@@ -15,6 +15,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var fs = require('fs');
 
 
 var constants = require('./src/constants');
@@ -80,7 +81,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Server the saved snap pics statically
-app.use(express.static(constants.SNAPS_SAVE_DIRECTORY));
 app.use(express.static(__dirname + '/../www'));
 
 app.get('/login', function(req, res){
@@ -100,7 +100,7 @@ app.post('/login', function(req, res, next){
     })(req, res, next);
 });
 
-app.get('/logout', function(req, res){
+app.get('/logout', utils.loggedIn, function(req, res){
     req.logout();
     res.redirect('/');
 });
@@ -114,7 +114,7 @@ app.get('/forgot', function(req, res) {
 
 
 //Gets the next snap to be evaluated
-app.get('/getnext', function (req, response){
+app.get('/getnext', utils.loggedIn, function (req, response){
     var REDIS_TAIL_INDEX = -1;
     winston.info("Received getnext request");
     //create empty JSObject to be filled before sending
@@ -139,14 +139,40 @@ app.get('/getnext', function (req, response){
                 //Fill the object with the corresponding entries
                 returnJSONObject["username"] = username;
                 returnJSONObject["filename"] = filename;;
-                returnJSONObject["identifier"] = reply;;
+                returnJSONObject["type"] = constants.VIDEOFILE;
                 returnJSONObject["permissionCode"] = permissionCode;
             }
             winston.verbose("Returned getnext", returnJSONObject);
-            //Return the JSON Object Client will check to see if there's anything in it
+            //Return the JSON Object Client will check for null
             response.json(returnJSONObject);
         });
 
+});
+
+app.get('/getwebmedia/:filename', utils.loggedIn, function(req, res){
+    var filename = req.params.filename;
+    var filenameFullPath;
+
+    if(utils.isVideo(filename)){
+        filenameFullPath = path.join(
+            constants.WEBM_TEMP_DIR,
+            path.basename(filename, '.mp4') + ".webm");
+    }else if(utils.isImage(filename)){
+        filenameFullPath = path.join(
+            constants.SNAPS_SAVE_DIRECTORY,
+            filename);
+    }else{
+        res.sendStatus(400);
+    }
+    fs.exists(filenameFullPath, function(exists) {
+        if (exists) {
+            winston.info("Sending: " + filename);
+            res.sendFile(filenameFullPath);
+        } else {
+            winston.warn("No such filename: " + filenameFullPath);
+            res.sendStatus(400);
+        }
+    });
 });
 
 //Bans a user by placing the appropriate permission on Redis
@@ -201,6 +227,10 @@ app.post('/popnext/:isApproved', function(request, response){
 
         });
 
+});
+
+app.get('/', utils.loggedIn, function(req, res){
+    res.sendFile(path.resolve(constants.WWWDIR + "/home.html"));
 });
 
 var server = app.listen(program.portNumber, 

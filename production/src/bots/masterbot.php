@@ -247,7 +247,7 @@ abstract class MasterBot{
     }
 
     protected function makeWebmPreviewVideo($fullPath){
-        $webmsaveDir = __DIR__."/../../../www/WebmTemp";
+        $webmsaveDir = __DIR__."/../../../webmtemp";
         $filenameOnly = pathinfo($fullPath, PATHINFO_FILENAME);
         $finalWebmFilePath = $webmsaveDir . "/$filenameOnly.webm";
         $ffmpeg = FFMpeg\FFMpeg::create();

@@ -54,13 +54,6 @@
                 });
         };
 
-        this.getWebmFilename = function(){
-            var currentSnapFilename = panel.currentSnap.filename;
-            var filenameWithoutExtension = 
-                currentSnapFilename.substring(currentSnapFilename.lastIndexOf('/') + 1, 
-                        currentSnapFilename.lastIndexOf('.'));
-            return "WebmTemp/" + filenameWithoutExtension + ".webm";
-        };
 
         //Called when the thumbs up button is pressed
         this.approved = function(){
@@ -83,18 +76,16 @@
         panel.getNextSuccess = function(data){
                         if(_.isEmpty(data)){
                             panel.currentSnap = DEFAULT_JSON_SNAP;
-                            panel.currentSnap["videofilename"] = panel.getWebmFilename();
                             panel.snapsInQueue = false;
                             panel.isVideo = false;
                         }else{
                             panel.currentSnap = data;
-                            panel.currentSnap["videofilename"] = panel.getWebmFilename();
                             panel.snapsInQueue = true;
-                            var extension = panel.currentSnap.filename.split(".").pop();
-                            panel.isVideo = extension == "mp4";
+                            panel.isVideo = data.type == 1;
                             //If its a video update the player
                             if(panel.isVideo){
-                                panel.changeSource(panel.getWebmFilename());
+                                panel.changeSource("/getwebmedia/" + 
+                                        data.filename);
                             }
                         }
                     }
