@@ -1,12 +1,7 @@
-var utils = require('./src/utils.js');
 
-if(utils.isInvalidInput(process.argv)){
-    utils.printUsageThenQuit();
-}
-//this require has to be at the top
+//this require at the very top to check cmd line
 var program = require('./src/commandline.js');
-var domainName = process.argv[2];
-var portNumber = process.argv[3];
+var utils = require('./src/utils.js');
 
 var express = require('express');
 var app = express();
@@ -17,10 +12,10 @@ var redisStore = require('connect-redis')(expressSession);
 var flash = require('connect-flash');
 
 var constants = require('./src/constants');
-constants.createConstants(domainName);
+constants.createConstants(program.domainName);
 
 var dbORM = require('./src/ormbootstrap.js');
-dbORM.initialize(domainName);
+dbORM.initialize(program.domainName);
 
 var redis = require('redis'),
     redisClient = redis.createClient();
@@ -148,12 +143,13 @@ app.post('/popnext/:isApproved', function(request, response){
 
 });
 
-var server = app.listen(portNumber, program.acceptConnectionsFrom, function () {
+var server = app.listen(program.portNumber, 
+        program.acceptConnectionsFrom, function () {
 
       var host = server.address().address
       var port = server.address().port
 
-      winston.info('moderator app for ' + domainName + 
+      winston.info('moderator app for ' + program.domainName + 
           " listening at http:" + host + ":" +  port);
 
 });
