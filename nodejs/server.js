@@ -13,6 +13,7 @@ var flash = require('connect-flash');
 var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var path = require('path');
 var cookieParser = require('cookie-parser');
 
 
@@ -28,18 +29,18 @@ var redis = require('redis'),
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy;
 
-passport.use('login', new LocalStrategy({
+passport.use(new LocalStrategy({
         passReqToCallback: true
     },
     function(req, username, password, done) {
         dbORM.users.find(username).then(function(user) {
             if (user == null) {
-                winston.info('User Not Found with username: ' + username);
+                winston.info('User Not Found: ' + username);
                 return done(null, false, 
                     req.flash('message', 'Incorrect username.'));
             }
-            if (user.domainPassword == password) {
-                winston.info('Invalid Password for username: ' + username);
+            if (user.password != password) {
+                winston.info('Invalid Password for User: ' + username);
                 return done(null, false, 
                     req.flash('message', 'Incorrect password.'));
             }
@@ -47,11 +48,15 @@ passport.use('login', new LocalStrategy({
         });
     }
 ));
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
 
 
-//Server the saved snap pics statically
-app.use(express.static(constants.SNAPS_SAVE_DIRECTORY));
-app.use(express.static(__dirname + '/../www'));
 
 //AutoParses responses into json and gets cookies
 app.use(bodyParser.json());
@@ -64,14 +69,48 @@ app.use(expressSession({
     saveUninitialized: false,
     store: new redisStore({
         host: 'localhost',
-        port: 6379,
-        client: redisClient
+    port: 6379,
+    client: redisClient
     }),
     secret: 'somecrazyhash' 
 
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+//Server the saved snap pics statically
+app.use(express.static(constants.SNAPS_SAVE_DIRECTORY));
+app.use(express.static(__dirname + '/../www'));
+
+app.get('/login', function(req, res){
+    res.sendFile(path.resolve(constants.WWWDIR + "/login.html"));
+});
+
+app.post('/login', function(req, res, next){
+    passport.authenticate('local', function(err, user, info) {
+        if (err) return next(err)
+        if (!user) {
+            return res.redirect('/login')
+        }
+    req.logIn(user, function(err) {
+        if (err) return next(err);
+        return res.redirect('/');
+    });
+    })(req, res, next);
+});
+
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+});
+
+app.get('/forgot', function(req, res) {
+    res.render('forgot', {
+        user: req.user
+    });
+});
+
 
 
 //Gets the next snap to be evaluated
@@ -143,35 +182,35 @@ app.post('/popnext/:isApproved', function(request, response){
                                     request.body.identifier + 
                                     ", Message: Coudln't push identifier to AWAITING_POST_LIST");
                             }
-                });
+                        });
+                }else{
+                    winston.info("Username: " + 
+                            request.body.username + ", Approved: False");
+                    winston.verbose("Identifier: " + 
+                            request.body.identifier + ", Status: discarded..");
+                }
+                //Everything worked out, send OK and move on
+                response.sendStatus(200);
             }else{
-                winston.info("Username: " + 
-                        request.body.username + ", Approved: False");
-                winston.verbose("Identifier: " + 
-                        request.body.identifier + ", Status: discarded..");
+                winston.error("Key: " + request.body.identifier + 
+                        ", Status: Didn't exist, sending 400 Malrequest code back");
+                //Reply = how many removed. Since <= 0, we know it didn't exist, 
+                //send NO OK signal
+                response.sendStatus(400);
             }
-            //Everything worked out, send OK and move on
-            response.sendStatus(200);
-        }else{
-            winston.error("Key: " + request.body.identifier + 
-                    ", Status: Didn't exist, sending 400 Malrequest code back");
-            //Reply = how many removed. Since <= 0, we know it didn't exist, 
-            //send NO OK signal
-            response.sendStatus(400);
-        }
 
-    });
+        });
 
 });
 
 var server = app.listen(program.portNumber, 
         program.acceptConnectionsFrom, function () {
 
-      var host = server.address().address
-      var port = server.address().port
+            var host = server.address().address
+    var port = server.address().port
 
-      winston.info('moderator app for ' + program.domainName + 
-          " listening at http:" + host + ":" +  port);
+    winston.info('moderator app for ' + program.domainName + 
+        " listening at http:" + host + ":" +  port);
 
-});
+        });
 

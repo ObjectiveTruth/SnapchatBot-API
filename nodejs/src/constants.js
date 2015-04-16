@@ -11,4 +11,5 @@ constants.createConstants = function(domainName){
 constants.FRIEND_PERMISSION_CAN_POST = 0;
 constants.FRIEND_PERMISSION_CANNOT_POST = 1;
 constants.DEFAULT_FRIEND_PERMISSION = 0;
+constants.WWWDIR = __dirname + "/../../www";
 
