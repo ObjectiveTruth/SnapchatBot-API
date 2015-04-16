@@ -166,6 +166,7 @@ function interactivelyCreateNewUsersForDomain($domainName){
     $domainSpecificEntityManager = $domainSpecificORM->getEntityManager();
     $permissionsMessage = "Permission(default 0):";
     $passwordMessage = "Password:";
+    $emailMessage = "Email:";
     //Loop until no more users are to be created
     //Checks if the username already exists
     $makeAnotherUser = true;
@@ -180,6 +181,8 @@ function interactivelyCreateNewUsersForDomain($domainName){
                 getIntFromUserWithMessageAndDefault($permissionsMessage, 0));
             $user->setPassword(
                 getStringFromUserWithMessage($passwordMessage));
+                $user->setEmail(
+                    getStringFromUserWithMessage($emailMessage));
         }else{
             echo "Username: $potentialUsername already exists, overwrite?";
             if(doesUserAgree()){
@@ -187,11 +190,14 @@ function interactivelyCreateNewUsersForDomain($domainName){
                     getIntFromUserWithMessageAndDefault($permissionsMessage, 0));
                 $user->setPassword(
                     getStringFromUserWithMessage($passwordMessage));
+                $user->setEmail(
+                    getStringFromUserWithMessage($emailMessage));
             }else{
                 //Do nothing, doesn't want to overwrite
             }
         }
         $domainSpecificEntityManager->persist($user);
+        print_r($user);
         $makeAnotherUser = doesUserWantToMakeAnotherUser();
     }
 

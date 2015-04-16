@@ -24,6 +24,13 @@ class User
       */
     protected $password;
 
+    /** 
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", precision=0, scale=0, nullable=false, unique=false)
+      */
+    protected $email;
+
     /**
      * @var integer
      *
@@ -63,6 +70,16 @@ class User
 
     public function setPermission($permission){
         $this->permission = $permission;
+
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email){
+        $this->email = $email;
 
     }
 

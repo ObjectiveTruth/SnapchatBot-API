@@ -16,6 +16,7 @@ define('FRIENDS_TABLE_SCHEMA',
 define('USERS_TABLE_SCHEMA',
     "(username VARCHAR(255) NOT NULL, ".
     "password VARCHAR(255) NOT NULL, ".
+    "email VARCHAR(255),".
     "permission INT NOT NULL, ".
     "reset_password_token VARCHAR(256), ".
     "reset_password_expire DATETIME, ".
