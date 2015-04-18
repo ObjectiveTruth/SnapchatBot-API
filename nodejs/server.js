@@ -81,10 +81,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Server the saved snap pics statically
-app.use(express.static(__dirname + '/../www'));
+app.use(express.static(constants.WWWPUBLICDIR));
 
 app.get('/login', function(req, res){
-    res.sendFile(path.resolve(constants.WWWDIR + "/login.html"));
+    res.sendFile(path.resolve(constants.WWWPUBLICDIR + "/login.html"));
 });
 
 app.post('/login', function(req, res, next){
@@ -100,6 +100,7 @@ app.post('/login', function(req, res, next){
     })(req, res, next);
 });
 
+
 app.get('/logout', utils.loggedIn, function(req, res){
     req.logout();
     res.redirect('/');
@@ -111,10 +112,22 @@ app.get('/forgot', function(req, res) {
     });
 });
 
+app.use(utils.loggedIn);
+////////////////////////
+////////////////////////
+//BELOW THIS IS PRIVATE
+////////////////////////
+////////////////////////
+
+app.get('/', function(req, res, next){
+    res.sendFile(path.resolve(constants.WWWPRIVATEDIR + "/home.html"));
+});
+
+
 
 
 //Gets the next snap to be evaluated
-app.get('/getnext', utils.loggedIn, function (req, response){
+app.get('/getnext', function (req, response){
     var REDIS_TAIL_INDEX = -1;
     winston.info("Received getnext request");
     //create empty JSObject to be filled before sending
@@ -149,7 +162,7 @@ app.get('/getnext', utils.loggedIn, function (req, response){
 
 });
 
-app.get('/getwebmedia/:filename', utils.loggedIn, function(req, res){
+app.get('/getwebmedia/:filename', function(req, res){
     var filename = req.params.filename;
     var filenameFullPath;
 
@@ -229,8 +242,11 @@ app.post('/popnext/:isApproved', function(request, response){
 
 });
 
-app.get('/', utils.loggedIn, function(req, res){
-    res.sendFile(path.resolve(constants.WWWDIR + "/home.html"));
+
+app.use(express.static(constants.WWWPRIVATEDIR));
+
+app.get('/*', function(req, res, next){
+   res.redirect('/');
 });
 
 var server = app.listen(program.portNumber, 
