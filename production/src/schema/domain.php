@@ -58,7 +58,7 @@ class Domain
      * Set domainName
      *
      * @param string $domainName
-     * @return Customer
+     * @return Domain
      */
     public function setDomainName($domainName)
     {
@@ -81,7 +81,7 @@ class Domain
      * Set bot_type
      *
      * @param integer $botType
-     * @return Customer
+     * @return Domain
      */
     public function setBotType($botType)
     {
@@ -104,7 +104,7 @@ class Domain
      * Set bot_username
      *
      * @param string $botUsername
-     * @return Customer
+     * @return Domain
      */
     public function setBotUsername($botUsername)
     {
@@ -127,7 +127,7 @@ class Domain
      * Set bot_password
      *
      * @param string $botPassword
-     * @return Customer
+     * @return Domain
      */
     public function setBotPassword($botPassword)
     {
@@ -150,7 +150,7 @@ class Domain
      * Set port_number
      *
      * @param integer $portNumber
-     * @return Customer
+     * @return Domain
      */
     public function setPortNumber($portNumber)
     {

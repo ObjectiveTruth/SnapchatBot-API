@@ -11,7 +11,7 @@ class BotFactory{
     public function returnBotForAccount($domainName){
         $domainDBConnection = new ORMDBConnection("snapchatbot_db");
         $domainEntityManager = $domainDBConnection->getEntityManager();
-        $domain = $domainEntityManager->find("Customer", $domainName);
+        $domain = $domainEntityManager->find("Domain", $domainName);
         $domainBotType = $domain->getbotType();
         switch($domainBotType){
         case 0:

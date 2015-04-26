@@ -10,7 +10,7 @@
     app.controller('mod-panelController', ['$http', '$sce', function($http, $sce){
         var DEFAULT_JSON_SNAP = {username: "N/A", 
             permissionCode: 0,
-            filename: "images/blankImage.jpg"};
+            webpicture: "images/blankImage.jpg"};
         //this is used to create a local object instead of using this everywhere
         //which is ambiguous
         var panel = this;
@@ -79,14 +79,21 @@
                             panel.snapsInQueue = false;
                             panel.isVideo = false;
                         }else{
-                            panel.currentSnap = data;
-                            panel.snapsInQueue = true;
-                            panel.isVideo = data.type == 1;
+                            if(data.type == 1){
+                                panel.isVideo = true;
+                                data.webpicture = "";
+                            }else{
+                                panel.isVideo = false;
+                                data.webpicture = "/getwebmedia/" +
+                                    data.filename;
+                            }
                             //If its a video update the player
                             if(panel.isVideo){
                                 panel.changeSource("/getwebmedia/" + 
-                                        data.filename);
+                                    data.filename);
                             }
+                            panel.currentSnap = data;
+                            panel.snapsInQueue = true;
                         }
                     }
 

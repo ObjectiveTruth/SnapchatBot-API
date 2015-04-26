@@ -149,10 +149,13 @@ app.get('/getnext', function (req, response){
                 var username = filename.substring(0, endOfName);
                 //Get that user's permission
                 permissionCode = constants.DEFAULT_FRIEND_PERMISSION;
+                var mediaType = constants.IMAGEFILE;
+                if(utils.isVideo(filename)){mediaType = constants.VIDEOFILE;}
                 //Fill the object with the corresponding entries
                 returnJSONObject["username"] = username;
                 returnJSONObject["filename"] = filename;;
-                returnJSONObject["type"] = constants.VIDEOFILE;
+                returnJSONObject["type"] = mediaType;
+                returnJSONObject["identifier"] = identifier;
                 returnJSONObject["permissionCode"] = permissionCode;
             }
             winston.verbose("Returned getnext", returnJSONObject);
