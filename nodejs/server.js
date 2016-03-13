@@ -13,9 +13,16 @@ var flash = require('connect-flash');
 var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var sgTransport = require('nodemailer-sendgrid-transport');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var fs = require('fs');
+
+var mailer = nodemailer.createTransport(sgTransport(
+            {auth: 
+                {api_user: 'user_key', 
+                    api_key: 'user_password'}
+            }));
 
 
 var constants = require('./src/constants');
@@ -91,11 +98,11 @@ app.post('/login', function(req, res, next){
     passport.authenticate('local', function(err, user, info) {
         if (err) return next(err)
         if (!user) {
-            return res.redirect('/login')
+            return res.json({message: "Username/Password combination not found"});
         }
     req.logIn(user, function(err) {
         if (err) return next(err);
-        return res.redirect('/');
+        return res.json({redirect: "/"});
     });
     })(req, res, next);
 });
@@ -106,9 +113,137 @@ app.get('/logout', utils.loggedIn, function(req, res){
     res.redirect('/');
 });
 
-app.get('/forgot', function(req, res) {
-    res.render('forgot', {
-        user: req.user
+app.get('/reset/:token', function(req, res) {
+    dbORM.users.find({ where: 
+        { resetPasswordToken: req.params.token, 
+            resetPasswordExpires: { $gt: new Date() } }})
+        .then(function(user) {
+            if (user == null) {
+                winston.warn("Couldn't find user with a valid Password Reset Token");
+                return res.redirect('/forgot');
+            }else{
+                winston.info("Password Reset Token is valid, redirecting..");
+                res.redirect("/passchanger.html?token=" + req.params.token);
+            }});
+});
+
+app.post('/reset/:token', function(req, res) {
+    async.waterfall([
+        function(done) {
+            dbORM.users.find({ where:
+                {resetPasswordToken: req.params.token, 
+                    resetPasswordExpires: { $gt: new Date() } }})
+                .then(function(user) {
+                if (user == null) {
+                    winston.warn("Password token was not found or is expired");
+                    return res.json({type: "fail", 
+                        message: "Password reset token is invalid or has expired"});
+                }
+
+                user.password = req.body.password1;
+                user.resetPasswordToken = undefined;
+                user.resetPasswordExpires = undefined;
+
+                user.save().then(function() {
+                    winston.verbose("Successfully changed password in db");
+                    req.logIn(user, function(err){
+                        done(err, user);
+                    });
+                }).catch(function(err){
+                    winston.err("Couldn't store password reset token and expiry to db");
+                });
+            });
+        },
+        function(user, done) {
+            var email = {
+                to: user.email,
+                from: 'passwordreset@snapify.com',
+                subject: 'Your password has been changed',
+                text: 'Hello,\n\n' +
+                    'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+            };
+            mailer.sendMail(email, function(err, res){
+                if(err){
+                    winston.error("Couldn't send password confirm change " +
+                        "email through SendGrid API: ");
+                }else{
+                    winston.verbose("Confirmed Pass Change Email Sent! Response:");
+                }
+                done(err, 'done');
+            });
+
+        }
+    ], function(err) {
+        if(err){
+            winston.error("Failed to change password");
+            res.json({type: "fail", 
+                message: "Could not change password, if this persist contact us"});
+        }else{
+            winston.info("Successfully changed password");
+            res.json({redirect: "/"});
+        }
+    });
+});
+
+app.post('/forgot', function(req, res) {
+    winston.info("Received forgot request");
+    async.waterfall([
+        function(done) {
+            crypto.randomBytes(20, function(err, buf) {
+                var token = buf.toString('hex');
+                done(err, token);
+            });
+        },
+        function(token, done) {
+            dbORM.users.find({ where: {email :req.body.email} }).then(function(user) {
+                if (user == null) {
+                    winston.warn("Attempted to reset password, but email not found: " + 
+                        req.body.email);
+                    return res.json({message: "No account with that email exists"});
+                }
+
+                var currentDate = new Date();
+
+                user.resetPasswordToken = token;
+                user.resetPasswordExpires = 
+                currentDate.setHours(currentDate.getHours() + 1);
+
+            user.save().then(function() {
+                done(null, token, user.email);
+            }).catch(function(err){
+                winston.err("Couldn't store password reset token and expiry to db");
+            });
+            });
+        },
+        function(token, userEmail, done) {
+            var email = {
+                to: userEmail,
+                from: 'passwordreset@snapify.ca',
+                subject: 'Snapify Password Reset',
+                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                    'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                    'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+                    'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+            };
+            mailer.sendMail(email, function(err, res){
+                if(err){
+                    winston.error("Couldn't send email through SendGrid API: ");
+                }else{
+                    winston.verbose("Email Sent! Response: " + res);
+                }
+                done(err, 'done');
+            });
+        }
+    ], function(err) {
+        if (err) {
+            winston.error("Error occured while creating/sending password reset token");
+            return res.json({type: "fail",
+                message: "There was an error generating token"});
+        }else{
+            winston.info("Sent reset password email");
+            res.json({type: "success", 
+                message: "A password reset email has been sent. Check your spam"});
+        }
     });
 });
 
@@ -249,17 +384,17 @@ app.post('/popnext/:isApproved', function(request, response){
 app.use(express.static(constants.WWWPRIVATEDIR));
 
 app.get('/*', function(req, res, next){
-   res.redirect('/');
-});
+           res.redirect('/');
+           });
 
-var server = app.listen(program.portNumber, 
-        program.acceptConnectionsFrom, function () {
+           var server = app.listen(program.portNumber, 
+           program.acceptConnectionsFrom, function () {
 
-            var host = server.address().address
-    var port = server.address().port
+           var host = server.address().address
+           var port = server.address().port
 
-    winston.info('moderator app for ' + program.domainName + 
-        " listening at http:" + host + ":" +  port);
+           winston.info('moderator app for ' + program.domainName + 
+           " listening at http:" + host + ":" +  port);
 
-        });
+           });
 

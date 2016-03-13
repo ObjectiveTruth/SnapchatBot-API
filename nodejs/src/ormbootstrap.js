@@ -63,7 +63,7 @@ orm.initialize = function(domainName){
             type: Sequelize.STRING,
             field: 'reset_password_token'
         },
-        resetPasswordExpire: {
+        resetPasswordExpires: {
             type: Sequelize.DATE,
             field: 'reset_password_expire'
         }
