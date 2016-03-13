@@ -1,4 +1,8 @@
-# Snap API
+# Snap API [Deprecated]
+
+**Important**
+
+No longer maintained and not recommended for usage. It was designed to act as a bot to the Snapchat API. Snapchat has since changed their service significantly and thus my fork has been abandoned. This is for reference only
 
 Interface to Snapchat
 
@@ -46,15 +50,15 @@ Interface to Snapchat
 
     Ngnix Server auto-starts after install finishes on port 80
 
-    ```sudo -s
+    ```sudo -s```
 
     nginx=stable # use nginx=development for latest development version
 
-    add-apt-repository ppa:nginx/$nginx
+    ```add-apt-repository ppa:nginx/$nginx```
 
     apt-get update 
 
-    apt-get install nginx```
+    ```apt-get install nginx```
 
 
 ###Notes
