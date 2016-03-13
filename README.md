@@ -1,10 +1,25 @@
 # Snap API [Deprecated]
 
-**Important**
+## Important :bangbang:
 
-No longer maintained and not recommended for usage. It was designed to act as a bot to the Snapchat API. Snapchat has since changed their service significantly and thus my fork has been abandoned. This is for reference only
+No longer maintained and not recommended for usage. Snapchat has since changed their service significantly and thus my fork has been abandoned. This is for reference only
 
-Interface to Snapchat
+## What was it suppose to do?
+
+The idea was to create an automated bot that would do respond to remote commands from a webpage to manage one's Snapchat account
+
+## Technologies breakdown
+
+The Snapchat Bot itself was built in **PHP** and is a fork of another project. 
+
+Tests were added using **PHPUnit**
+
+Backend was build in **Nodejs** using the **ExpressJS** framework.
+Authentication was managed using **PassportJS** with state being handled by **Redis**
+User's information was managed using a **MySQL** database
+Commandline Utility was created for Administrative tasks using **CommanderJS**
+
+--------
 
 **Read the [wiki](https://github.com/mgp25/Snap-API/wiki)** and previous issues before opening a new one! Maybe your issue is already answered.
 
